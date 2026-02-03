@@ -1,0 +1,70 @@
+/* 导航栏背景 */
+#top-settings-holder {
+    background-image: url('你的导航栏背景，不想要的话删掉也行');
+    background-size: 100% 100%;
+    background-position: center;
+    background-color: 十六进制背景色; /* 背景底色 */
+    box-shadow: none;
+    border-bottom: 2px solid 十六进制颜色; /* 这个是底部边框，不想要就删掉 */
+}
+
+/* 隐藏原有图标 */
+#top-settings-holder .drawer-icon::before {
+    content: '' !important;
+    visibility: hidden; 
+}
+#top-settings-holder .drawer {
+    flex: 1; 
+}
+#top-settings-holder .drawer-icon {
+    display: block; 
+    margin: 0 auto;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: all 0.3s ease-in-out;
+    width: ✏️px; /* 图标宽度 */
+    height: ✏️px; /* 图标高度 */
+    opacity: 1 !important;
+}
+/* （可选）悬停效果 */
+.drawer-icon.fa-fw:hover {
+    transform: scale(1.2);
+}
+
+/* 图标替换 */
+.drawer-icon.fa-sliders {
+   background-image: url('✏️'); /* AI响应配置 */
+}
+.drawer-icon.fa-plug {
+   background-image: url('✏️'); /* API连接 */
+}
+.drawer-icon.fa-font {
+   background-image: url('✏️'); /* AI回复格式化 */
+}
+.drawer-icon.fa-book-atlas {
+   background-image: url('✏️'); /* 世界信息 */
+}
+.drawer-icon.fa-user {
+   background-image: url('✏️'); /* 用户设置 */
+}
+.drawer-icon.fa-image {
+   background-image: url('✏️'); /* 背景图 */
+}
+.drawer-icon.fa-cubes {
+   background-image: url('✏️'); /* 扩展 */
+}
+.drawer-icon.fa-bars-progress {
+   background-image: url('✏️'); /* 记忆表格 */
+}
+.drawer-icon.fa-face-smile {
+   background-image: url('✏️'); /* 用户角色管理 */
+}
+.drawer-icon.fa-address-card {
+   background-image: url('✏️'); /* 角色卡 */
+}
+/* （可选）展开状态图标 */
+#top-settings-holder .drawer .drawer-icon.openIcon {
+    background-image: url(✏️) !important; /* 统一替换为同一个图标 */
+    transform: scale(1.2); 
+}

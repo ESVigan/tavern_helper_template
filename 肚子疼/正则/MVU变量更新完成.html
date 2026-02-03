@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', serif;
+      background: transparent;
+      padding: 10px;
+    }
+
+    /* 滚动条美化：确保在不同环境下都能有精致的视觉感 */
+    .content-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .content-container::-webkit-scrollbar-track {
+      background: #fdfdfb;
+    }
+    .content-container::-webkit-scrollbar-thumb {
+      background: #d1c4ab;
+      border-radius: 2px;
+    }
+    /* 隐藏默认 summary 箭头 */
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    /* Token 警告样式 */
+    .token-counter.token-warning {
+      border-color: #8c2d2d;
+      color: #8c2d2d;
+      background: #fff5f5;
+      font-weight: 700;
+    }
+  </style>
+
+  <script type="module">
+    $(() => {
+      try {
+        // 获取全局变量
+        const 全局变量 = getAllVariables();
+        
+        // 读取 LAST_SEND_TOKENS 并显示
+        const 消耗 = _.get(全局变量, 'LAST_SEND_TOKENS', 0);
+        $('#mvu-token-val').text(消耗);
+        
+        // 如果token消耗超过30000，添加警告样式
+        if (消耗 > 30000) {
+          $('#mvu-token-ui').addClass('token-warning');
+        }
+        
+      } catch (e) {
+        console.error('[MVU] Token计数器加载失败:', e);
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div
+    style="
+      max-width: 600px;
+      margin: 12px auto;
+      background-color: #fdfdfb;
+      border: 1px solid #d1c4ab;
+      border-left: 5px solid #8c2d2d;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      font-family: 'Times New Roman', serif;
+      overflow: hidden;
+    "
+  >
+    <details style="outline: none">
+      <summary
+        style="
+          list-style: none;
+          cursor: pointer;
+          padding: 8px 16px;
+          background-color: #f4f4f2;
+          display: flex;
+          align-items: center;
+          border-bottom: 1px solid #eee;
+        "
+      >
+        <span style="color: #8c2d2d; margin-right: 12px; font-size: 14px">◈</span>
+        <span
+          style="
+            font-family: sans-serif;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #444;
+            flex-grow: 1;
+            text-transform: uppercase;
+          "
+          >⚜MVU ZOD 更新完成⚜</span
+        >
+        <!-- Token 计数器 -->
+        <div class="token-counter" id="mvu-token-ui" style="
+          font-size: 10px;
+          padding: 2px 8px;
+          background: #fdfdfb;
+          border: 1px solid #d1c4ab;
+          border-radius: 2px;
+          color: #999;
+          margin-right: 12px;
+          font-family: 'Consolas', monospace;
+        ">
+          消耗 <span id="mvu-token-val">0</span>
+        </div>
+        <span style="color: #d1c4ab; font-size: 16px">👁</span>
+      </summary>
+
+      <!-- 内容容器，添加了最大高度和滚动支持 -->
+      <div class="content-container" style="padding: 16px; max-height: 450px; overflow-y: auto">
+        <!-- 变量变更区 (内容 $2) -->
+        <div
+          style="
+            background-color: #1a1a1a;
+            padding: 12px;
+            border-radius: 2px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #c5a059;
+          "
+        >
+          <div
+            style="
+              font-family: serif;
+              font-size: 10px;
+              color: #c5a059;
+              margin-bottom: 8px;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              font-style: italic;
+            "
+          >
+            ꕤ 变量更新内容 ꕤ
+          </div>
+          <pre
+            style="
+              margin: 0;
+              font-family: 'Consolas', 'Monaco', monospace;
+              font-size: 12px;
+              line-height: 1.5;
+              color: #d4af37;
+              white-space: pre-wrap;
+              word-break: break-all;
+            "
+          >
+$2</pre
+          >
+        </div>
+
+        <!-- 逻辑分析区 (内容 $1) -->
+        <div style="padding-left: 12px; border-left: 2px solid #eee">
+          <div
+            style="
+              font-family: sans-serif;
+              font-size: 9px;
+              color: #999;
+              text-transform: uppercase;
+              margin-bottom: 6px;
+              letter-spacing: 1px;
+            "
+          >
+            Divination Logic / 逻辑溯源
+          </div>
+
+          <!-- 核心修改点：添加了 white-space: pre-wrap 和换行优化 -->
+          <div
+            style="
+              font-size: 12px;
+              line-height: 1.7;
+              color: #555;
+              text-align: justify;
+              white-space: pre-wrap;
+              word-wrap: break-word;
+            "
+          >
+            $1
+          </div>
+        </div>
+
+        <!-- 底部装饰符 -->
+        <div
+          style="text-align: center; margin-top: 15px; color: #d1c4ab; font-size: 10px; letter-spacing: 4px; opacity: 0.5"
+        >
+          —— ✦ ——
+        </div>
+      </div>
+    </details>
+  </div>
+</body>
+</html>

@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Card Status</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --card-bg: #e6e6e6;
+            --text-black: #1a1a1a;
+            --text-gray: #666666;
+            --accent-purple: #4a0e4e;
+            --accent-gold: #d4af37;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent !important;
+            font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+            box-sizing: border-box;
+            overflow: visible !important;
+            perspective: 1200px; /* Enable 3D flip with depth */
+        }
+
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+
+        /* --- Main Card Container (Flip Wrapper) --- */
+        .card-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            /* 4. Fixed Ratio */
+            aspect-ratio: 16 / 9;
+            /* Ensure height is respected if aspect-ratio fails or for calculation */
+            min-height: 394px; /* 700 * 9/16 */
+            margin: 10px auto;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card-wrapper.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Common Face Styles */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Hide back when flipped */
+            -webkit-backface-visibility: hidden;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+        }
+
+        /* --- Front Face --- */
+        .front-face {
+            /* Default */
+        }
+
+        /* --- Back Face --- */
+        .back-face {
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 30px;
+            background: #f0f0f0;
+            background-image:
+                linear-gradient(rgba(26, 26, 26, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(26, 26, 26, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none; /* Initially disabled so it doesn't block front */
+        }
+
+        /* --- Pointer Events Management for Flip --- */
+        /* When flipped, disable front face interaction, enable back face */
+        .card-wrapper.flipped .front-face {
+            pointer-events: none;
+        }
+        .card-wrapper.flipped .back-face {
+            pointer-events: auto;
+        }
+
+        /* Ensure flip buttons are always clickable */
+        .flip-btn-container {
+            pointer-events: none; /* Let clicks pass through container */
+        }
+        .flip-btn {
+            pointer-events: auto !important; /* Force button clickable */
+        }
+
+        /* Shared Elements */
+        .bg-big-text {
+            position: absolute;
+            top: 40%; /* Move up slightly */
+            right: 20px; /* Align to right */
+            transform: translateY(-50%);
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            color: rgba(0,0,0,0.08);
+            z-index: 0;
+            pointer-events: none;
+            line-height: 1; /* Increased line height to prevent overlap */
+            text-align: right; /* Align text to right */
+            max-width: 45%; /* Prevent extending to left status area */
+        }
+        .bg-word-big {
+            font-size: 140px; /* Slightly smaller to fit better */
+            display: block;
+            letter-spacing: -5px;
+        }
+        .bg-word-small {
+            font-size: 70px;
+            display: block;
+            letter-spacing: 0px;
+            margin-top: 0; /* Removed negative margin */
+        }
+
+        /* --- Left Panel (Front) --- */
+        .info-panel {
+            position: relative;
+            z-index: 2;
+            flex: 1.4; /* Increased from 1.2 to give text more space */
+            padding: 25px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* --- Right Panel (Front - Image) --- */
+        .img-panel {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            height: 100%;
+            /* Removed feathering/mask as requested */
+        }
+
+        .char-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 1. Adjusted position to show more character */
+            object-position: top center;
+            transform: scale(1.15) translateX(-35%) translateY(4%); /* Move more left (-35%) */
+        }
+
+        /* Top Right Status Machine */
+        .status-machine {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.3); /* Lower opacity */
+            padding: 6px 16px;
+            /* Sharp Polygon Shape */
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            border-radius: 0; /* Remove rounded corners */
+            box-shadow: none; /* Remove shadow to make it less eye-catching */
+            border: 1px solid rgba(0,0,0,0.1); /* Faint border */
+            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(0,0,0,0.5);
+            /* Square dot */
+            border-radius: 0;
+            box-shadow: none;
+            transition: background 0.3s;
+        }
+
+        .status-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(0,0,0,0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-machine.active {
+            background: rgba(74, 14, 78, 0.2); /* Low opacity purple bg */
+            border-color: rgba(74, 14, 78, 0.3);
+        }
+        .status-machine.active .status-dot {
+            background: var(--accent-purple);
+            box-shadow: 0 0 8px var(--accent-purple);
+            animation: pulse-dot 2s infinite;
+        }
+        .status-machine.active .status-text {
+            color: var(--accent-purple);
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- Background Decoration --- */
+        .bg-deco-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Tech Lines */
+        .bg-line {
+            position: absolute;
+            background: rgba(0,0,0,0.1);
+        }
+        .bg-line.h1 { top: 15%; left: 0; width: 100%; height: 1px; }
+        .bg-line.h2 { bottom: 25%; left: 40%; width: 60%; height: 1px; }
+        .bg-line.v1 { top: 0; right: 25%; width: 1px; height: 100%; }
+
+        /* Small Tech Text */
+        .bg-tech-text {
+            position: absolute;
+            font-family: monospace;
+            font-size: 8px;
+            color: rgba(0,0,0,0.2);
+            font-weight: 700;
+        }
+        .bt-1 { top: 16%; right: 26%; }
+        .bt-2 { bottom: 26%; right: 5%; }
+        .bt-3 { top: 5%; left: 5%; font-size: 10px; letter-spacing: 2px; }
+
+        /* Geometric Shapes */
+        .bg-shape {
+            position: absolute;
+            background: rgba(0,0,0,0.03);
+        }
+        .bs-1 { top: 15%; right: 0; width: 100px; height: 40px; }
+        .bs-2 { bottom: 0; right: 25%; width: 60px; height: 15px; }
+
+        /* Possession State Image Filter */
+        .possessed-filter {
+            /* filter: sepia(0.2) hue-rotate(280deg) contrast(1.1); */
+        }
+
+        /* --- UI Components --- */
+
+        /* Logo Area */
+        .logo-block {
+            margin-bottom: 10px;
+            margin-top: 10px; /* Spacing since top icons removed */
+        }
+        .logo-text {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 900;
+            font-size: 24px;
+            line-height: 0.9;
+            color: var(--text-black);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+        .logo-sub {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-black);
+            /* 7. Removed TOKYO */
+        }
+
+        /* Name Block */
+        .name-block {
+            margin-bottom: 15px;
+        }
+        .char-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 0.9;
+            color: var(--text-black);
+            text-transform: uppercase;
+        }
+        .char-role {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            background: #333;
+            color: #fff;
+            display: inline-block;
+            padding: 2px 6px;
+            transform: skewX(-10deg);
+        }
+
+        /* Stats Bars */
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 20px;
+            max-width: 280px; /* Shortened slightly */
+            width: 100%;
+        }
+        .stat-row {
+            display: flex;
+            align-items: center;
+            height: 16px; /* Slightly taller */
+            background: rgba(0,0,0,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .stat-label-box {
+            background: var(--text-black);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 0 8px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            width: 90px;
+            justify-content: space-between;
+        }
+        .stat-bar-track {
+            flex: 1;
+            height: 100%;
+            position: relative;
+        }
+        .stat-bar-fill {
+            height: 100%;
+            background: #999;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Bar Colors */
+        .bar-purple { background: var(--accent-purple); }
+        .bar-gold { background: var(--accent-gold); }
+        .bar-gray { background: #666; }
+
+        /* Description */
+        .quote-block {
+            margin-bottom: auto;
+            padding-right: 20px;
+        }
+        .quote-text {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--text-black);
+            margin-bottom: 6px;
+        }
+        .desc-text {
+            font-size: 10px;
+            line-height: 1.5;
+            color: var(--text-gray);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Footer (Front) */
+        .footer-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .ind-label {
+            font-size: 8px;
+            font-weight: 700; /* Reduced weight */
+            color: #999; /* Lighter color */
+            text-transform: uppercase;
+            margin-bottom: 2px; /* Add spacing */
+        }
+        .ind-val {
+            font-family: 'Oswald', sans-serif;
+            font-size: 16px; /* Increased size */
+            font-weight: 900; /* Extra bold */
+            color: var(--text-black);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-height: 21px;
+            white-space: normal; /* Allow wrapping */
+            max-width: 150px; /* Limit width to force wrap */
+            line-height: 1.1;
+        }
+
+        /* Center Flip Button Container */
+        .flip-btn-container {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%; /* Ensure container spans full width */
+            z-index: 20;
+            pointer-events: none; /* Container passes clicks */
+            display: flex;
+            justify-content: center; /* Flex center */
+            align-items: center;
+        }
+
+        .flip-btn {
+            pointer-events: auto; /* Button catches clicks */
+            font-size: 16px;
+            color: #fff; /* White icon */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2); /* Frosted glass bg */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.4);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            position: relative;
+        }
+        .flip-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        /* Ripple Effect */
+        .flip-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.6);
+            transform: translate(-50%, -50%);
+            animation: ripple 2s infinite;
+            z-index: -1;
+        }
+        @keyframes ripple {
+            0% { width: 100%; height: 100%; opacity: 0.8; border-color: rgba(0,0,0,0.1); }
+            100% { width: 200%; height: 200%; opacity: 0; border-color: rgba(0,0,0,0); }
+        }
+
+        /* --- Back Face Layout --- */
+        .back-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--text-black);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .back-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .back-return {
+            font-size: 10px;
+            font-weight: 700;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden; /* Disable global scroll */
+            min-height: 0;
+            padding-right: 0;
+            padding-bottom: 40px; /* Space for bottom button */
+        }
+
+        /* Removed global scrollbar styles for grid */
+
+        .inv-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto; /* Independent scroll */
+            height: 100%;
+            padding-right: 5px;
+            /* Hide Scrollbar */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .inv-column::-webkit-scrollbar {
+            display: none;
+        }
+
+        .col-title {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--text-black);
+            text-transform: uppercase;
+            border-left: 3px solid var(--accent-gold);
+            padding-left: 6px;
+            margin-bottom: 5px;
+            flex-shrink: 0; /* Keep title visible */
+            position: sticky;
+            top: 0;
+            background: #f0f0f0; /* Match bg */
+            z-index: 5;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .item-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .item-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-black);
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .item-type {
+            font-size: 8px;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 700;
+            background: #eee;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+        .item-desc {
+            font-size: 9px;
+            color: #666;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+        .ghost-rank {
+            color: var(--accent-purple);
+            font-weight: 900;
+        }
+
+        /* Responsive - Keep Ratio */
+        /* Media query removed to allow JS zoom to handle scaling consistently */
+    </style>
+</head>
+<body>
+
+    <div class="card-wrapper">
+
+        <!-- FRONT FACE -->
+        <div class="card-face front-face">
+            <div class="bg-deco-container">
+                <div class="bg-big-text">BAI XI RUO</div>
+                <div class="bg-line h1"></div>
+                <div class="bg-line h2"></div>
+                <div class="bg-line v1"></div>
+                <div class="bg-shape bs-1"></div>
+                <div class="bg-shape bs-2"></div>
+                <div class="bg-tech-text bt-1">DATA_STREAM_SYNC</div>
+                <div class="bg-tech-text bt-2">ID: 9527-X</div>
+                <div class="bg-tech-text bt-3">/// ARCHIVE_ACCESS</div>
+            </div>
+
+            <!-- Status Machine (Top Right of Card) -->
+            <div class="status-machine" id="status-machine">
+                <div class="status-dot"></div>
+                <div class="status-text" id="status-text">NORMAL</div>
+            </div>
+
+            <div class="info-panel">
+                <div class="logo-block">
+                    <div class="logo-text">神秘复苏<br>MYSTERY</div>
+                    <div class="logo-sub">灵异事件档案</div>
+                </div>
+
+                <div class="name-block">
+                    <!-- 7. 展示{{user}} -->
+                    <div class="char-name" id="val-name">{{user}}</div>
+                    <div class="char-role" id="val-role">调查员</div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-row">
+                        <div class="stat-label-box"><span>掌控度</span><span id="txt-control">0%</span></div>
+                        <div class="stat-bar-track"><div class="stat-bar-fill bar-purple" id="bar-control"></div></div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label-box"><span>战后性欲</span><span id="txt-lust">0%</span></div>
+                        <div class="stat-bar-track"><div class="stat-bar-fill bar-gold" id="bar-lust"></div></div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-label-box"><span>位阶</span><span id="txt-rank">1</span></div>
+                        <div class="stat-bar-track"><div class="stat-bar-fill bar-gray" id="bar-rank"></div></div>
+                    </div>
+                </div>
+
+                <div class="quote-block">
+                    <div class="quote-text" id="val-quote">"Loading data stream..."</div>
+                    <div class="desc-text" id="val-desc">
+                        正在同步亚空间数据...
+                    </div>
+                </div>
+
+                <div class="footer-bar">
+                    <div class="status-indicators">
+                        <div class="indicator-box">
+                            <span class="ind-label">当前地点</span>
+                            <span class="ind-val" id="val-location">未知</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Flip Button -->
+            <div class="flip-btn-container">
+                <div class="flip-btn" onclick="flipCard()">
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+            </div>
+
+            <div class="img-panel">
+                <!-- 2. 立绘 -->
+                <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E8%AF%B7%E7%A5%9E%E8%89%B2%E5%AD%BD/%E7%99%BD%E5%A4%95%E8%8B%A5.png" class="char-image" id="char-img">
+            </div>
+        </div>
+
+        <!-- BACK FACE -->
+        <div class="card-face back-face">
+            <div class="back-header">
+                <div class="back-title">能力 & 物品清单</div>
+            </div>
+
+            <div class="inventory-grid">
+                <!-- Column 1: Ghosts -->
+                <div class="inv-column">
+                    <div class="col-title"><i class="fas fa-ghost"></i> 驾驭厉鬼</div>
+                    <div id="list-ghosts">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+
+                <!-- Column 2: Abilities -->
+                <div class="inv-column">
+                    <div class="col-title"><i class="fas fa-bolt"></i> 能力权柄</div>
+                    <div id="list-abilities">
+                         <!-- Dynamic -->
+                    </div>
+                </div>
+
+                <!-- Column 3: Items -->
+                <div class="inv-column">
+                    <div class="col-title"><i class="fas fa-box"></i> 物品清单</div>
+                    <div id="list-items">
+                         <!-- Dynamic -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Footer for Button -->
+            <div class="flip-btn-container">
+                <div class="flip-btn" onclick="flipCard()">
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Flip function
+        function flipCard() {
+            document.querySelector('.card-wrapper').classList.toggle('flipped');
+        }
+        const MOCK_DATA = {
+            "主角": {
+                "位阶": 2,
+                "掌控度": 45,
+                "附身状态": true,
+                "战后性欲": 80,
+                "能力列表": {
+                    "色孽感官": { "类型": "权柄", "描述": "感知周围的情绪流动" },
+                    "痛苦转化": { "类型": "被动", "描述": "将受到的伤害转化为快感" }
+                },
+                "驾驭的鬼": {
+                    "鬼手": { "实力": "C", "简介": "一只干枯的手臂，能压制灵异" }
+                },
+                "物品栏": {
+                    "黄金手枪": { "数量": 1, "功能": "发射黄金子弹关押厉鬼" },
+                    "替死草人": { "数量": 1, "功能": "抵挡一次致死攻击" }
+                }
+            },
+            "世界": {
+                "时间": "2026年1月30日",
+                "地点": "大江市·废弃医院",
+                "当前灵异事件": "午夜凶铃"
+            }
+        };
+
+        const DEBUG_MODE = false;
+
+        // Scaling Logic from Reference
+        function adjustMobileScale() {
+            const container = document.querySelector('.card-wrapper');
+            if (!container) return;
+
+            const designWidth = 700; // Based on max-width
+            // Add safety buffer for 3D rotation to prevent clipping
+            const safetyBuffer = 40;
+            const availableWidth = window.innerWidth - safetyBuffer;
+
+            // Check if user agent suggests mobile
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            // On mobile, we might need to be more aggressive with width usage
+            const targetWidth = isMobile ? window.innerWidth - 20 : availableWidth;
+
+            if (targetWidth < designWidth) {
+                const scale = targetWidth / designWidth;
+                container.style.width = designWidth + 'px';
+                container.style.maxWidth = 'none';
+                container.style.marginLeft = 'auto';
+                container.style.marginRight = 'auto';
+                // Note: The reference used zoom.
+                container.style.zoom = scale;
+            } else {
+                container.style.width = '100%';
+                container.style.maxWidth = '700px';
+                container.style.marginLeft = 'auto';
+                container.style.marginRight = 'auto';
+                container.style.zoom = 1;
+            }
+        }
+
+        async function renderData() {
+            try {
+                let data = {};
+
+                // 3. Debug Logic
+                if (DEBUG_MODE) {
+                    console.log("DEBUG MODE ACTIVE: Using Mock Data");
+                    data = MOCK_DATA;
+                } else {
+                    // Try to get data from SillyTavern environment
+                    if (typeof Mvu !== 'undefined') {
+                        // Ensure we get the correct message ID context
+                        const msgId = typeof getCurrentMessageId !== 'undefined' ? getCurrentMessageId() : 'latest';
+                        const variables = Mvu.getMvuData({
+                            type: 'message',
+                            message_id: msgId
+                        });
+
+                        // Robust Data Extraction: Check stat_data first, then fallback to root
+                        if (variables && variables.stat_data) {
+                            data = variables.stat_data;
+                        } else if (variables && variables['主角']) {
+                            data = variables;
+                        } else {
+                            data = variables || {};
+                        }
+
+                        console.log("MVU Fetch Result:", { msgId, hasData: !_.isEmpty(data), keys: Object.keys(data) });
+                    } else if (typeof getAllVariables !== 'undefined') {
+                        // Fallback for non-MVU (rare)
+                        const allVars = getAllVariables() || {};
+                        data = allVars.stat_data || allVars;
+                    }
+
+                    // Fallback to mock if empty AND debug is on (redundant but safe)
+                    if (Object.keys(data).length === 0 && DEBUG_MODE) data = MOCK_DATA;
+                }
+
+                // Safety check for data structure
+                const player = data.主角 || {};
+                const world = data.世界 || {};
+
+                // Debug log to console to help troubleshooting
+                if (!player.位阶 && !DEBUG_MODE) {
+                    console.warn("Status Bar: '主角' data missing or empty. Current Data:", data);
+                }
+
+                // --- Front Face Update ---
+
+                // Name & Role
+                // Note: The HTML hardcodes {{user}} for the name as requested.
+                // We update role based on possession
+                $('#val-role').text(player.附身状态 ? '宿主：色孽' : '调查员');
+
+                // Stats
+                const control = player.掌控度 || 0;
+                $('#txt-control').text(control + '%');
+                $('#bar-control').css('width', Math.min(control, 100) + '%');
+
+                const lust = player.战后性欲 || 0;
+                $('#txt-lust').text(lust + '%');
+                $('#bar-lust').css('width', Math.min(lust, 100) + '%');
+
+                const rank = player.位阶 || 1;
+                $('#txt-rank').text(rank);
+                $('#bar-rank').css('width', Math.min(rank * 10, 100) + '%');
+
+                // Possession Status & Image Filter
+                const isPossessed = player.附身状态;
+                const IMG_BAI = "https://gitgud.io/ESVigan/picture/-/raw/master/%E8%AF%B7%E7%A5%9E%E8%89%B2%E5%AD%BD/%E7%99%BD%E5%A4%95%E8%8B%A5.png";
+                const IMG_SLAANESH = "https://gitgud.io/ESVigan/picture/-/raw/master/%E8%AF%B7%E7%A5%9E%E8%89%B2%E5%AD%BD/%E8%89%B2%E5%AD%BD.png";
+
+                if (isPossessed) {
+                    // Update Status Machine
+                    $('#status-machine').addClass('active');
+                    $('#status-text').text('POSSESSED');
+
+                    $('#char-img').attr('src', IMG_SLAANESH);
+                    // $('#char-img').addClass('possessed-filter'); // Image already provided
+                    $('#val-quote').text('"Surrender to the pleasure..."');
+                    $('#val-desc').text(`当前灵异事件：${world.当前灵异事件 || '无'} (Level: ${world.危险等级 || '?'})`);
+
+                    // Change Background Text
+                    $('.bg-big-text').html('<span class="bg-word-big">SLAAN</span><span class="bg-word-small">ESH</span>');
+                    $('.bg-big-text').css('color', 'rgba(74, 14, 78, 0.1)'); // Purple tint for Slaanesh
+                } else {
+                    // Update Status Machine
+                    $('#status-machine').removeClass('active');
+                    $('#status-text').text('NORMAL');
+
+                    $('#char-img').attr('src', IMG_BAI);
+                    // $('#char-img').removeClass('possessed-filter');
+                    $('#val-quote').text('"Stay focused. Stay alive."');
+                    $('#val-desc').text(`当前灵异事件：${world.当前灵异事件 || '无'} (Level: ${world.危险等级 || '?'})`);
+
+                    // Reset Background Text
+                    $('.bg-big-text').html('<span class="bg-word-big">BAI</span><span class="bg-word-small">XI RUO</span>');
+                    $('.bg-big-text').css('color', 'rgba(0,0,0,0.08)');
+                }
+
+                $('#val-location').text(world.地点 || '未知');
+
+                // --- Back Face Update (Lists) ---
+
+                // Helper to create cards
+                const createCard = (name, meta, desc, type) => `
+                    <div class="item-card">
+                        <div class="item-name">
+                            ${name}
+                            ${type ? `<span class="item-type">${type}</span>` : ''}
+                        </div>
+                        <div class="item-desc">${desc || meta || '暂无描述'}</div>
+                    </div>`;
+
+                // Ghosts
+                const ghosts = player.驾驭的鬼 || {};
+                const ghostHtml = Object.keys(ghosts).map(k => {
+                    const g = ghosts[k];
+                    return createCard(k, `实力: <span class="ghost-rank">${g.实力 || '?'}</span>`, g.简介, '厉鬼');
+                }).join('') || '<div style="font-size:10px;color:#999">暂无驾驭厉鬼</div>';
+                $('#list-ghosts').html(ghostHtml);
+
+                // Abilities
+                const abilities = player.能力列表 || {};
+                const abilityHtml = Object.keys(abilities).map(k => {
+                    const a = abilities[k];
+                    return createCard(k, '', a.描述, a.类型);
+                }).join('') || '<div style="font-size:10px;color:#999">暂无特殊能力</div>';
+                $('#list-abilities').html(abilityHtml);
+
+                // Items
+                const items = player.物品栏 || {};
+                const itemHtml = Object.keys(items).map(k => {
+                    const i = items[k];
+                    return createCard(k, '', i.功能, `x${i.数量 || 1}`);
+                }).join('') || '<div style="font-size:10px;color:#999">暂无物品</div>';
+                $('#list-items').html(itemHtml);
+
+            } catch (e) {
+                console.warn("Render Error:", e);
+            }
+        }
+
+        $(document).ready(async () => {
+            // Standard MVU Initialization Wait
+            if (typeof waitGlobalInitialized !== 'undefined') {
+                await waitGlobalInitialized('Mvu');
+            }
+
+            // Wait for data to be ready if possible
+            if (typeof waitUntil !== 'undefined' && typeof getVariables !== 'undefined' && !DEBUG_MODE) {
+                try {
+                    await waitUntil(() => {
+                        // Check if we can get any variables
+                        const vars = getVariables({type: 'message'});
+                        // Check for our specific structure or generic stat_data
+                        return vars && (vars.stat_data || vars['主角']);
+                    }, 5000); // 5s timeout
+                } catch(e) {
+                    console.warn("Timeout waiting for stat_data");
+                }
+            }
+
+            renderData();
+            setInterval(renderData, 2000);
+
+            // Bind Resize
+            window.addEventListener('resize', adjustMobileScale);
+            // Initial Call
+            adjustMobileScale();
+        });
+    </script>
+</body>
+</html>

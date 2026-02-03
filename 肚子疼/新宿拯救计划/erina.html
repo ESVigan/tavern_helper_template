@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Erina_Acid_Complex</title>
+    <!-- 引入更粗的字体以匹配参考图 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f2f2f2;
+            --line-color: #111;
+            --accent-yellow: #feca57;
+            --card-white: #fff;
+            --shadow-hard: 5px 5px 0 var(--line-color);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Noto Sans SC', sans-serif;
+            height: 100vh; width: 100vw;
+            overflow: hidden; position: relative;
+            color: var(--line-color);
+        }
+
+        /* === 1. 背景复杂化 (Complex Background) === */
+        
+        /* 基础网格 */
+        .bg-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--line-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center;
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        /* 巨大的背景排版 (参考图风格) */
+        .big-typo-bg {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Oswald', sans-serif;
+            font-size: 35vh; /* 极巨大 */
+            font-weight: 700;
+            color: #e0e0e0;
+            line-height: 0.8;
+            z-index: 0;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            letter-spacing: -10px;
+            pointer-events: none;
+        }
+        .typo-stroke {
+            -webkit-text-stroke: 2px rgba(0,0,0,0.05);
+            color: transparent;
+        }
+
+        /* 顶部时间装饰带 */
+        .time-strip {
+            position: absolute; top: 60px; left: 0; width: 100%;
+            display: flex; justify-content: center; gap: 10px;
+            font-family: 'Oswald', sans-serif; font-size: 12px;
+            letter-spacing: 2px; opacity: 0.6;
+            z-index: 5;
+        }
+
+        /* 2. 顶部导航 */
+        .top-nav {
+            position: absolute; top: 0; left: 0; width: 100%; height: 50px;
+            background: var(--line-color); z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px; color: #fff;
+        }
+        .nav-title { font-weight: 900; font-size: 14px; letter-spacing: 1px; }
+
+        /* 3. 核心立绘 */
+        .char-container {
+            position: absolute; bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%; height: 100%;
+            display: flex; align-items: flex-end; justify-content: center;
+            z-index: 10; pointer-events: none;
+        }
+        .char-img {
+            height: 92%; width: auto;
+            filter: drop-shadow(8px 8px 0px rgba(0,0,0,0.1));
+            animation: breathe 4s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+        @keyframes breathe {
+            0% { transform: translateX(5%) scale(1); }
+            50% { transform: translateX(5%) scale(1.02) translateY(-5px); }
+            100% { transform: translateX(5%) scale(1); }
+        }
+
+        /* === 4. 悬浮组件 (UI) === */
+        .sticker {
+            position: absolute; background: var(--card-white);
+            border: 2.5px solid var(--line-color); border-radius: 12px;
+            box-shadow: var(--shadow-hard); z-index: 20; color: var(--line-color);
+        }
+
+        /* 关系阶段 (左上) */
+        .stage-box {
+            top: 90px; left: 15px; padding: 8px 12px;
+            border-radius: 4px; /* 改为方角，更硬核 */
+            background: var(--accent-yellow);
+            animation: float 5s ease-in-out infinite;
+        }
+        .stage-label { font-size: 9px; font-weight: 900; opacity: 0.7; letter-spacing: 1px; }
+        .stage-val { font-size: 14px; font-weight: 900; margin-top: 0; display: flex; align-items: center; gap: 5px; }
+
+        /* 开关组 (右上) */
+        .switch-box {
+            top: 90px; right: 15px; padding: 6px 10px;
+            display: flex; flex-direction: column; gap: 6px;
+            border-radius: 8px; animation: float 6s ease-in-out infinite 1s;
+        }
+        .switch-row { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; }
+        .toggle { width: 28px; height: 14px; border: 2px solid #000; border-radius: 20px; position: relative; }
+        .toggle-dot { width: 8px; height: 8px; background: #000; border-radius: 50%; position: absolute; top: 1px; left: 1px; }
+        .toggle.on { background: var(--line-color); }
+        .toggle.on .toggle-dot { left: auto; right: 1px; background: #fff; }
+
+        /* 头像档案 (右中) */
+        .avatar-card {
+            top: 190px; right: 15px; width: 100px; padding: 6px 6px 15px 6px;
+            transform: rotate(5deg); z-index: 15; text-align: center;
+            background: #fff; border-radius: 4px;
+            animation: float-rotate 5s ease-in-out infinite;
+        }
+        .avatar-frame {
+            width: 100%; height: 80px; background: #eee;
+            border: 2px solid #000; overflow: hidden; margin-bottom: 5px;
+        }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-tag { font-size: 10px; font-weight: 900; background: #000; color: #fff; padding: 2px 6px; }
+
+        /* === 5. 状态面板 (核心修改：放大 + 上移 + 猫猫修复) === */
+        .status-wrapper {
+            position: absolute;
+            /* 关键修改：上移，不再挤在底部 */
+            top: 45%; 
+            left: 20px;
+            transform: translateY(-50%) rotate(-3deg);
+            z-index: 25;
+            width: 160px; /* 关键修改：放大宽度 */
+        }
+
+        .status-panel {
+            position: relative;
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 6px 6px 0 rgba(0,0,0,1);
+        }
+
+        /* 猫猫贴纸：现在相对于 status-wrapper 定位 */
+        .cat-sticker {
+            position: absolute;
+            /* 关键修改：趴在顶端，不遮挡内容 */
+            top: -45px; 
+            right: -10px;
+            width: 70px;
+            z-index: 30;
+            filter: drop-shadow(2px 2px 0 #fff);
+            animation: cat-bounce 3s infinite ease-in-out;
+        }
+        
+        @keyframes cat-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+
+        .stat-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+        .stat-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 900; }
+        .progress-box { height: 12px; border: 2px solid #000; border-radius: 6px; background: #eee; position: relative; }
+        .icon-row { display: flex; justify-content: space-between; border-top: 2px dashed #ddd; padding-top: 10px; }
+        .icon-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-weight: 700; color: #888; }
+        .icon-circle { width: 32px; height: 32px; border: 2px solid #aaa; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+        /* === 6. 复杂装饰元素 (Acid Elements) === */
+        
+        /* 条形码 */
+        .barcode {
+            position: absolute; bottom: 180px; left: 20px;
+            font-family: 'Libre Barcode 39 Text', cursive; /* 如果加载失败会回退 */
+            font-size: 40px; transform: rotate(90deg); opacity: 0.8;
+            pointer-events: none;
+        }
+        /* 模拟条形码的条纹 */
+        .fake-barcode {
+            position: absolute; bottom: 220px; left: -10px;
+            width: 100px; height: 30px;
+            background: repeating-linear-gradient(90deg, #000, #000 2px, transparent 2px, transparent 4px, #000 6px);
+            transform: rotate(90deg); z-index: 5; opacity: 0.7;
+        }
+
+        /* 十字星装饰 */
+        .star-deco { position: absolute; color: var(--line-color); z-index: 5; font-size: 24px; animation: blink 2s infinite; }
+        .star-1 { top: 25%; left: 20%; font-size: 30px; color: var(--accent-yellow); }
+        .star-2 { top: 60%; right: 10%; }
+        .star-3 { bottom: 160px; right: 30px; font-size: 14px; }
+        @keyframes blink { 50% { opacity: 0.3; transform: scale(0.8); } }
+
+        /* 右下角：标签组 */
+        .tags-group {
+            position: absolute; bottom: 160px; right: 15px;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 15;
+        }
+        .tag-item {
+            background: #fff; border: 2px solid #000; padding: 4px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 900; box-shadow: 2px 2px 0 #ccc; transform: rotate(-2deg);
+        }
+        .tag-item:nth-child(2) { transform: rotate(2deg); background: var(--accent-yellow); }
+        .location-pill {
+            background: #000; color: #fff; padding: 6px 12px; border-radius: 4px;
+            font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px;
+        }
+
+        /* === 7. 底部密集排版 (Dense Bottom) === */
+        .bottom-area {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 130px;
+            background: linear-gradient(to top, #fff 80%, transparent);
+            padding: 0 15px; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 20px;
+            z-index: 30;
+        }
+
+        .name-wrapper {
+            display: flex; align-items: flex-end; margin-bottom: 10px;
+        }
+        .name-en {
+            font-family: 'Oswald', sans-serif; font-size: 56px; line-height: 0.8;
+            color: #000; font-weight: 700; font-style: italic; margin-right: 10px;
+        }
+        .name-cn-tag {
+            background: #000; color: #fff; font-size: 14px; font-weight: bold;
+            padding: 2px 8px; margin-bottom: 5px; transform: skewX(-10deg);
+        }
+
+        /* 密集说明文字 (参考图风格) */
+        .disclaimer-text {
+            font-size: 9px; color: #666; line-height: 1.2; margin-bottom: 10px;
+            font-family: monospace; max-width: 80%;
+        }
+
+        /* 播放器 */
+        .player-bar {
+            width: 100%; height: 46px; border: 2.5px solid #000; border-radius: 30px;
+            display: flex; align-items: center; padding: 0 15px; background: #fff;
+            box-shadow: 4px 4px 0 #000; justify-content: space-between;
+        }
+        
+        /* 动画 */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        @keyframes float-rotate { 0%, 100% { transform: translateY(0) rotate(5deg); } 50% { transform: translateY(-4px) rotate(3deg); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. 复杂背景层 -->
+    <div class="bg-grid"></div>
+    <div class="big-typo-bg">
+        <span style="color:#ddd">ERINA</span>
+        <span class="typo-stroke">01</span>
+    </div>
+
+    <!-- 时间装饰带 -->
+    <div class="time-strip">
+        <i class="fas fa-crosshairs"></i>
+        <span>SAT &gt;&gt;&gt;&gt; 19:00 PM</span>
+        <span>FEB.2025</span>
+        <i class="fas fa-crosshairs"></i>
+    </div>
+
+    <!-- 装饰元素 -->
+    <div class="fake-barcode"></div>
+    <div class="star-deco star-1">✦</div>
+    <div class="star-deco star-2">✦</div>
+    <div class="star-deco star-3">✱</div>
+
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <i class="fas fa-chevron-left"></i>
+        <div class="nav-title">TomorrowsGirlfriend</div>
+        <a href="index.html" style="color: inherit; text-decoration: none;">
+        <i class="fas fa-ellipsis-h"></i>
+        </a>
+    </div>
+
+    <!-- 2. 人物立绘 -->
+    <div class="char-container">
+        <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E5%A6%82%E6%9C%88%E7%BB%98%E9%87%8C%E5%A5%88_-removebg-preview.png" class="char-img">
+    </div>
+
+    <!-- 3. 左侧悬浮：状态面板 (上移、放大) -->
+    <div class="status-wrapper">
+        <!-- 猫猫趴在面板上 -->
+        <img src="https://i.postimg.cc/gjhvZyjq/d1c66fd6-0733-4a74-bedb-bd5ed27dbc99.png" class="cat-sticker">
+        
+        <div class="status-panel">
+            <div class="stat-item">
+                <div class="stat-head"><span>好感度 (SYNC)</span> <span>0%</span></div>
+                <div class="progress-box"><div class="progress-fill" style="width:0%"></div></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-head"><span>信赖度 (TRUST)</span> <span>0%</span></div>
+                <div class="progress-box"><div class="progress-fill" style="width:0%"></div></div>
+            </div>
+            <div class="icon-row">
+                <div class="icon-btn">
+                    <div class="icon-circle"><i class="fas fa-lock"></i></div>
+                    <span>未交换</span>
+                </div>
+                <div class="icon-btn">
+                    <div class="icon-circle"><i class="fas fa-heart-broken"></i></div>
+                    <span>单身</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 左上：关系阶段 -->
+    <div class="sticker stage-box">
+        <div class="stage-label">CURRENT STATUS</div>
+        <div class="stage-val">
+            <i class="fas fa-exclamation-triangle"></i> 査定の対象
+        </div>
+    </div>
+
+    <!-- 右上：开关 -->
+    <div class="sticker switch-box">
+        <div class="switch-row">
+            <div class="toggle"><div class="toggle-dot"></div></div>
+            <span>私生活 OFF</span>
+        </div>
+        <div class="switch-row">
+            <div class="toggle on"><div class="toggle-dot"></div></div>
+            <span>营业中 ON</span>
+        </div>
+    </div>
+
+    <!-- 右中：头像 -->
+    <div class="sticker avatar-card">
+        <div class="avatar-frame">
+            <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E8%A7%92%E8%89%B2%E5%8D%A1/126d0d6b-9e45-4dd0-8bc4-5f8986fd654e.png" class="avatar-img">
+        </div>
+        <div class="avatar-tag"># ID PHOTO</div>
+    </div>
+
+    <!-- 右下：标签组 -->
+    <div class="tags-group">
+        <div class="tag-item"># S级女友</div>
+        <div class="tag-item"># 完美演技</div>
+        <div class="location-pill">
+            <i class="fas fa-map-marker-alt"></i> 新宿·歌舞伎町
+        </div>
+    </div>
+
+    <!-- 4. 底部密集区域 -->
+    <div class="bottom-area">
+        <div class="name-wrapper">
+            <div class="name-en">KISARAGI</div>
+            <div class="name-cn-tag">如月绘里奈</div>
+        </div>
+        
+        <!-- 装饰性密集文字 -->
+        <div class="disclaimer-text">
+            WARNING: Amongst the whispers of Zephyrs, where soft winds guide and hope resides. Unauthorized access is prohibited. // SYSTEM_READY
+        </div>
+
+        <div class="player-bar">
+            <i class="fas fa-play" style="font-size:18px"></i>
+            <div style="flex:1; height:2px; background:#000; margin:0 10px; opacity:0.2"></div>
+            <span style="font-size:12px; font-weight:900">VOICE.MP3</span>
+        </div>
+    </div>
+
+</body>
+</html>

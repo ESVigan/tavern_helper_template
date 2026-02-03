@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TomorrowsGirlfriend - 个人资料</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Oswald:wght@700&family=Rubik+Glitch&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* ========== MVU DESIGN SYSTEM (INTEGRATED) ========== */
+        :root {
+            --bg-color: #f0f2f5;
+            --line-color: #1a1a1a;
+            --accent-yellow: #feca57;
+            --accent-purple: #cd84f1;
+            --accent-cyan: #7efff5;
+            --accent-pink: #ff69b4; /* Kept for specific accents */
+            --card-white: #fff;
+            --shadow-hard: 4px 4px 0 var(--line-color);
+            --purple-dark: #2d0046;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            margin: 0; padding: 0;
+            width: 100vw; height: 100vh;
+            background-color: transparent; /* Allows ST background */
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--line-color);
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Core Container */
+        .page {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            max-width: calc(100vh * 3 / 4);
+            max-height: 100vh;
+            min-height: 550px;
+            min-width: 300px;
+            background-color: var(--bg-color);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            margin: auto;
+            border: 4px solid var(--line-color);
+            display: flex; flex-direction: column;
+        }
+
+        /* Background Decoration */
+        .bg-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--line-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line-color) 1px, transparent 1px);
+            background-size: 40px 40px; opacity: 0.05; z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Navigation Views */
+        .view-section {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            background: transparent;
+            z-index: 1;
+            animation: fadeIn 0.2s;
+        }
+        .view-section.active { display: flex; }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+
+        /* System Header (From MVU) */
+        .header-group { flex-shrink: 0; border-bottom: 3px solid var(--line-color); }
+        .sys-header {
+            background: var(--line-color);
+            padding: 5px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            color: #fff; font-family: 'Oswald', sans-serif; font-size: 12px;
+            position: relative; z-index: 2;
+        }
+        .world-info-bar {
+            background: #000; color: #0f0;
+            font-family: 'Noto Sans SC', monospace; font-size: 10px;
+            padding: 4px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #333; font-weight: 700;
+            position: relative; z-index: 2;
+        }
+        .world-blink { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .marquee-container {
+            background: var(--accent-yellow);
+            border-top: 2px solid #000;
+            height: 20px;
+            overflow: hidden; white-space: nowrap;
+            display: flex; align-items: center;
+            position: relative; z-index: 2;
+        }
+        .marquee-content {
+            display: inline-block; font-size: 9px; font-weight: 900;
+            animation: scroll 15s linear infinite; padding-left: 100%;
+        }
+        @keyframes scroll { 100% { transform: translateX(-100%); } }
+
+        /* Hero Banner (From MVU) */
+        .hero-banner {
+            margin: 15px;
+            background: #fff; border: 3px solid var(--line-color);
+            padding: 10px;
+            position: relative; z-index: 2;
+            box-shadow: var(--shadow-hard);
+            overflow: hidden;
+            height: 90px; 
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .hero-left { z-index: 2; width: 45%; }
+        .hero-title {
+            font-family: 'Oswald', sans-serif; 
+            font-size: 18px; line-height: 0.9;
+            text-transform: uppercase; font-weight: 700;
+        }
+        .hero-sub {
+            background: #000; color: #fff; display: inline-block;
+            font-size: 8px; font-weight: bold; padding: 2px 4px; margin-top: 5px;
+            transform: skewX(-10deg);
+        }
+        .hero-right { z-index: 2; width: 55%; text-align: right; }
+        .logo-main {
+            font-family: 'Rubik Glitch', cursive;
+            font-size: 20px; line-height: 0.85;
+            color: var(--line-color);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            letter-spacing: -1px;
+        }
+        .logo-highlight { color: #ff4757; }
+        .since-tag { font-family: 'Oswald', sans-serif; font-size: 8px; letter-spacing: 2px; color: #888; margin-top: 3px; }
+
+        /* 1. Selection Screen List - Banner Style */
+        .archive-list { 
+            padding: 0 15px; 
+            display: flex; flex-direction: column; gap: 20px; 
+            position: relative; z-index: 2;
+            flex: 1; overflow-y: auto;
+        }
+
+        .archive-banner {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1200 / 420; /* Exact ratio 20:7 */
+            background: #e0e0e0;
+            border: 3px solid var(--line-color);
+            box-shadow: var(--shadow-hard);
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            display: flex; align-items: flex-end;
+        }
+        .archive-banner:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 var(--line-color); }
+        .archive-banner:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--line-color); }
+
+        .banner-img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 0;
+            background-color: #ccc; 
+            display: flex; align-items: center; justify-content: center;
+            color: #888; font-weight: 900; font-size: 20px; letter-spacing: 2px;
+        }
+        
+        .banner-overlay {
+            position: relative; z-index: 1;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 40px 15px 15px 15px;
+            color: #fff;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        .banner-name-group { display: flex; flex-direction: column; }
+        .banner-name-main { 
+            font-size: 24px; font-weight: 900; line-height: 1; 
+            text-shadow: 2px 2px 0 #000;
+        }
+        .banner-name-sub {
+            font-family: 'Oswald', sans-serif; font-size: 12px; 
+            opacity: 0.8; letter-spacing: 1px; margin-top: 2px;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .banner-icon { font-size: 20px; color: #fff; opacity: 0; transition: 0.2s; }
+        .archive-banner:hover .banner-icon { opacity: 1; transform: translateX(-5px); }
+
+        /* 2. Profile Screen & Common Elements */
+        /* Top Nav - Black Style from erina.html */
+        .top-nav {
+            position: relative; /* Changed from absolute to flow in flex */
+            width: 100%; height: 50px;
+            background: var(--line-color); 
+            z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px; color: #fff;
+            flex-shrink: 0;
+            border-bottom: none;
+        }
+        .nav-title { font-weight: 900; font-size: 14px; letter-spacing: 1px; font-family: 'Oswald', sans-serif; }
+        .nav-back { cursor: pointer; color: inherit; font-size: 16px; }
+
+        /* Time Strip from erina.html */
+        .time-strip {
+            width: 100%;
+            display: flex; justify-content: center; gap: 10px;
+            font-family: 'Oswald', sans-serif; font-size: 12px;
+            letter-spacing: 2px; opacity: 0.6;
+            padding: 10px 0;
+            background: transparent;
+            z-index: 5;
+            color: var(--line-color);
+            border-bottom: 1px dashed #ccc;
+        }
+
+        /* Big Background Typography */
+        .big-typo-bg {
+            position: absolute;
+            top: 20%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Oswald', sans-serif;
+            font-size: 150px; 
+            font-weight: 700;
+            color: #e0e0e0;
+            line-height: 0.8;
+            z-index: 0;
+            white-space: nowrap;
+            display: flex; flex-direction: column; align-items: center;
+            letter-spacing: -5px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        .typo-stroke {
+            -webkit-text-stroke: 2px rgba(0,0,0,0.1);
+            color: transparent;
+        }
+
+        /* Selection Header */
+        .select-header {
+            padding: 20px 15px;
+            border-bottom: 3px solid var(--line-color);
+            background: #fff;
+            margin-bottom: 15px;
+        }
+        .big-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 32px; font-weight: 900;
+            line-height: 1; margin-bottom: 5px;
+        }
+        .sub-title {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 10px; font-weight: 700;
+            background: #000; color: #fff;
+            display: inline-block; padding: 2px 6px;
+        }
+
+        .profile-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: 40px; position: relative; z-index: 2; }
+        
+        .hero-section {
+            width: 100%;
+            height: 240px; /* Increased height */
+            background: #333; position: relative;
+            border-bottom: 3px solid var(--line-color);
+        }
+        .hero-img { width: 100%; height: 100%; object-fit: contain; background: #000; opacity: 0.9; }
+        
+        .profile-body { padding: 0 15px; position: relative; z-index: 5; }
+        .profile-avatar-row {
+            margin-top: -50px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: flex-start; /* Changed to flex-start */
+            position: relative;
+        }
+        .p-avatar {
+            width: 90px; height: 90px;
+            border: 3px solid var(--card-white);
+            outline: 3px solid var(--line-color);
+            background: #fff; object-fit: cover;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        .book-btn {
+            background: var(--accent-pink); color: #fff;
+            padding: 8px 20px; font-weight: 900; font-family: 'Oswald', sans-serif;
+            border: 2.5px solid var(--line-color); 
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--line-color);
+            transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; font-size: 14px;
+            margin-top: 60px; /* Push down significantly into whitespace */
+        }
+        .book-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--line-color); }
+        
+        .p-name-block { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px dashed #ccc; }
+        .p-name { 
+            font-size: 26px; font-weight: 900; line-height: 1.2; 
+            text-shadow: 2px 2px 0 #fff; margin-bottom: 5px;
+        }
+        .p-meta { 
+            display: inline-block;
+            background: var(--accent-cyan); color: var(--line-color);
+            padding: 3px 8px; 
+            font-size: 10px; font-weight: 700; 
+            border: 2px solid var(--line-color);
+        }
+        
+        .info-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px;
+        }
+        .info-box {
+            background: var(--card-white); border: 2px solid var(--line-color);
+            padding: 8px 4px; text-align: center;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.05);
+        }
+        .info-label { font-size: 9px; font-weight: 800; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+        .info-val { font-size: 12px; font-weight: 900; }
+
+        /* Tabs */
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 20px;
+        }
+        .tab-item {
+            flex: 1; text-align: center; padding: 8px 0; font-weight: 800; font-size: 12px;
+            cursor: pointer; 
+            border: 2px solid var(--line-color);
+            background: #fff; 
+            transition: 0.2s;
+            box-shadow: 3px 3px 0 #ddd;
+        }
+        .tab-item.active { 
+            background: var(--line-color); color: #fff; 
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+        .tab-item:hover:not(.active) { transform: translateY(-2px); }
+
+        /* Tab Content Areas */
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+
+        /* Content: Bio & Rules */
+        .section-box {
+            background: #fff; border: 2px solid var(--line-color);
+            padding: 15px; margin-bottom: 15px; 
+            box-shadow: 4px 4px 0 var(--accent-yellow);
+            position: relative;
+        }
+        .section-box::after {
+            content: ''; position: absolute; top: 5px; right: 5px;
+            width: 10px; height: 10px; background: var(--line-color);
+            border-radius: 50%;
+        }
+
+        .section-title {
+            font-weight: 900; font-size: 14px; margin-bottom: 10px;
+            display: inline-block;
+            background: #000; color: #fff;
+            padding: 3px 8px;
+            font-family: 'Oswald', sans-serif; letter-spacing: 1px;
+        }
+        .section-text { font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: #444; }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        
+        /* Content: Feed */
+        .feed-item {
+            background: var(--card-white); border: 2px solid var(--line-color);
+            padding: 12px; margin-bottom: 12px; cursor: pointer; transition: 0.2s;
+            box-shadow: 3px 3px 0 #eee;
+        }
+        .feed-item:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 var(--accent-cyan); border-color: var(--line-color); }
+        .f-top { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; align-items: center; }
+        .f-date { color: #888; font-size: 10px; background: #eee; padding: 2px 6px; border: 1px solid #ddd; }
+        .f-content { font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
+        .f-footer { display: flex; gap: 15px; font-size: 11px; font-weight: 800; color: var(--line-color); }
+
+        /* Content: Reviews */
+        .review-item {
+            background: #fff; 
+            border: 2px solid var(--line-color);
+            margin-bottom: 12px; 
+            padding: 12px; 
+            cursor: pointer;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            transition: 0.2s;
+            position: relative;
+        }
+        .review-item:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--accent-purple); z-index: 10; }
+        .r-header { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center; }
+        .r-user { font-weight: 800; font-size: 12px; color: #fff; background: #000; padding: 2px 6px; }
+        .r-rating { color: var(--accent-pink); font-size: 12px; font-weight: bold; }
+        .r-text { font-size: 12px; color: #444; line-height: 1.5; font-style: italic; }
+        .r-reply-indicator { 
+            font-size: 10px; color: #fff; background: var(--accent-purple);
+            margin-top: 8px; font-weight: bold;
+            display: inline-flex; align-items: center; gap: 5px; 
+            padding: 3px 8px;
+            border: 1.5px solid var(--line-color);
+        }
+
+        /* 3. Detail Overlay */
+        .detail-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 200;
+            backdrop-filter: blur(2px);
+            display: none; justify-content: center; align-items: center;
+        }
+        .detail-overlay.active { display: flex; animation: fadeIn 0.2s; }
+        
+        .detail-card {
+            width: 90%; height: 80%; background: var(--bg-color);
+            border: 3px solid var(--line-color);
+            display: flex; flex-direction: column;
+            box-shadow: 8px 8px 0 var(--line-color);
+            overflow: hidden;
+            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .detail-scroll { padding: 20px; overflow-y: auto; flex: 1; }
+        
+        .detail-main-box {
+            background: #fff; border: 2px solid var(--line-color);
+            padding: 15px; margin-bottom: 15px; box-shadow: 4px 4px 0 #ddd;
+        }
+        .d-meta { font-size: 10px; color: #888; border-bottom: 1px dashed #ccc; padding-bottom: 8px; margin-bottom: 12px; font-family: monospace; }
+        .d-content { font-size: 14px; line-height: 1.6; margin-bottom: 15px; font-weight: 500; }
+        
+        .reply-box {
+            background: #fff0f5; border: 2px solid var(--accent-pink);
+            padding: 12px; margin-top: 15px;
+            position: relative;
+        }
+        .reply-box::before {
+            content: '★'; position: absolute; top: -10px; right: 10px; font-size: 14px;
+            background: #fff; border: 2px solid var(--accent-pink);
+            width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+            color: var(--accent-pink);
+        }
+        .reply-header { font-weight: 900; font-size: 12px; color: var(--accent-pink); margin-bottom: 6px; margin-left: 20px; }
+        .reply-text { font-size: 13px; color: #333; }
+
+        /* User Reply Box */
+        .user-reply-box {
+            background: #f0f8ff; border: 2px solid var(--accent-blue);
+            padding: 10px; margin-top: 10px;
+            margin-left: 15px;
+        }
+        .user-reply-header { font-weight: 900; font-size: 11px; color: var(--accent-blue); margin-bottom: 4px; }
+
+        /* Fixed Comment Item Style in Overlay */
+        .comment-item {
+            background: #fff; border: 2px solid var(--line-color);
+            padding: 10px; margin-bottom: 10px;
+            display: flex; gap: 10px;
+            box-shadow: 2px 2px 0 #eee;
+        }
+        .c-avatar { width: 30px; height: 30px; border: 2px solid var(--line-color); background: #eee; flex-shrink: 0; }
+        .c-body { flex: 1; font-size: 12px; }
+        .c-user { font-weight: 900; margin-bottom: 2px; font-size: 11px; color: var(--accent-pink); }
+
+        .hidden { display: none !important; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--line-color); }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="bg-grid"></div>
+
+    <!-- VIEW 1: SELECTION SCREEN -->
+    <div id="view-select" class="view-section active">
+        <!-- App Top Nav -->
+        <div class="top-nav">
+            <div class="nav-title">TomorrowsGirlfriend</div>
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <div class="select-header">
+            <div class="big-title">ARCHIVES</div>
+            <div class="sub-title">/// SELECT YOUR TARGET</div>
+        </div>
+        
+        <div class="archive-list">
+            <!-- Banner: Erina -->
+            <div class="archive-banner" onclick="openProfile('erina')">
+                <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E7%BB%98%E9%87%8C%E5%A5%88.png" class="banner-img">
+                <div class="banner-overlay">
+                    <div class="banner-name-group">
+                        <div class="banner-name-main">如月 绘里奈</div>
+                        <div class="banner-name-sub">KISARAGI ERINA</div>
+                    </div>
+                    <i class="fas fa-arrow-right banner-icon"></i>
+                </div>
+            </div>
+
+            <!-- Banner: Ayane -->
+            <div class="archive-banner" onclick="openProfile('ayane')">
+                <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E7%BB%BE%E9%9F%B3.png" class="banner-img">
+                <div class="banner-overlay">
+                    <div class="banner-name-group">
+                        <div class="banner-name-main">月宫 绾音</div>
+                        <div class="banner-name-sub">MAMIYA KANON</div>
+                    </div>
+                    <i class="fas fa-arrow-right banner-icon"></i>
+                </div>
+            </div>
+            
+            <div style="margin-top:auto; text-align:center; font-size:10px; color:#999; padding-bottom:10px;">
+                © 2025 Tomorrow's Girlfriend Inc.
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: PROFILE DETAIL -->
+    <div id="view-profile" class="view-section">
+        <div class="big-typo-bg">
+            <span style="color:#ddd" id="p-bg-name">NAME</span>
+            <span class="typo-stroke">01</span>
+        </div>
+
+        <div class="top-nav">
+            <i class="fas fa-chevron-left nav-back" onclick="goBack()"></i>
+            <div class="nav-title" id="p-header-name">TomorrowsGirlfriend</div>
+            <i class="fas fa-ellipsis-h"></i>
+        </div>
+
+        <div class="time-strip">
+            <i class="fas fa-crosshairs"></i>
+            <span id="p-time-strip">租借女友详情</span>
+            <i class="fas fa-crosshairs"></i>
+        </div>
+
+        <div class="profile-scroll">
+            <div class="hero-section">
+                <img id="p-hero" class="hero-img" src="">
+            </div>
+            
+            <div class="profile-body">
+                <div class="profile-avatar-row">
+                    <img id="p-avatar" class="p-avatar" src="">
+                    <button class="book-btn">立即预约</button>
+                </div>
+
+                <div class="p-name-block">
+                    <div class="p-name" id="p-fullname">姓名</div>
+                    <div class="p-meta" id="p-tagline">标签</div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-label">时薪</div>
+                        <div class="info-val" id="p-rate">¥0</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">评分</div>
+                        <div class="info-val" id="p-rating">5.0</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">年龄</div>
+                        <div class="info-val" id="p-age">18</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">类型</div>
+                        <div class="info-val" id="p-type">类型</div>
+                    </div>
+                </div>
+
+                <!-- TABS -->
+                <div class="tabs">
+                    <div class="tab-item active" onclick="switchTab('info')">档案 & 规则</div>
+                    <div class="tab-item" onclick="switchTab('feed')">最新动态</div>
+                    <div class="tab-item" onclick="switchTab('reviews')">用户评价</div>
+                </div>
+
+                <!-- TAB: INFO -->
+                <div id="tab-info" class="tab-content active">
+                    <div class="section-box">
+                        <div class="section-title">个人独白</div>
+                        <div class="section-text" id="p-bio">...</div>
+                    </div>
+                    <div class="section-box">
+                        <div class="section-title">活动范围</div>
+                        <div class="section-text" id="p-map">...</div>
+                        <div class="tag-cloud" id="p-map-tags"></div>
+                    </div>
+                    <div class="section-box">
+                        <div class="section-title">规则 & 红线</div>
+                        <div class="section-text" id="p-rules">...</div>
+                    </div>
+                    <div class="section-box">
+                        <div class="section-title">接待档期</div>
+                        <div class="section-text" id="p-schedule">...</div>
+                    </div>
+                </div>
+
+                <!-- TAB: FEED -->
+                <div id="tab-feed" class="tab-content">
+                    <div id="feed-container"></div>
+                </div>
+
+                <!-- TAB: REVIEWS -->
+                <div id="tab-reviews" class="tab-content">
+                    <div style="padding: 0 0px;">
+                        <div id="reviews-container"></div>
+                    </div>
+                    <div style="text-align:center; padding:10px; font-size:12px; color:#888;">
+                        已显示最近 20 条评价
+                    </div>
+                </div>
+                
+                <div style="height:30px"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 3: DETAIL OVERLAY -->
+    <div id="overlay-detail" class="detail-overlay" onclick="closeDetail(event)">
+        <div class="detail-card" onclick="event.stopPropagation()">
+            <div class="top-nav">
+                <div class="nav-back" onclick="closeDetail()"><i class="fas fa-times"></i> CLOSE</div>
+                <div class="nav-title" id="d-header-title">DETAIL</div>
+                <div style="width:30px"></div>
+            </div>
+            <div class="detail-scroll" id="detail-content-area">
+                <!-- Content Injected -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Mock Data Generation Helpers
+    function generateReviews(charName) {
+        const reviews = [];
+        // Real-sounding usernames
+        const users = [
+            "东京迷走君", "深夜食堂老板", "社畜也想谈恋爱", "GameMaster_X", "村上春树的猫", 
+            "周末限定男友", "新宿观测者", "纯爱战士", "咖啡中毒患者", "不愿透露姓名的K", 
+            "流浪诗人", "氪金玩家", "凌晨三点的云", "猫咪后院院长", "赛博朋克2026", 
+            "便利店便当鉴定师", "只有周五才开心", "想去海边的鱼", "银座散步", "被代码淹没",
+            "秋叶原攻略组", "拉面协会会员", "透明人S", "加班到死"
+        ];
+
+        // Random replies from other users
+        const randomUserReplies = [
+            "真的吗？我也想去试试了。",
+            "楼主好运气，我上次预约都没排上。",
+            "确实，这个评价很中肯。",
+            "我也觉得！完全同意！",
+            "下次我也要点这个套餐。",
+            "笑死，我也遇到过类似的情况。",
+            "真的很值得，强推。",
+            "楼主是懂行的。",
+            "太羡慕了...",
+            "这就是S级女友的含金量吗？",
+            "看了评论更想去了。",
+            "前排围观土豪。",
+            "扎心了老铁。",
+            "有一说一，确实不错。",
+            "感觉像是打开了新世界的大门。",
+            "我也想体验一下被‘虐’的感觉...😂"
+        ];
+        
+        const erinaTemplates = [
+            { text: "完全被看穿了...本来以为我是主导者，结果不知不觉就按她的节奏走了。她那玩味的眼神，简直像是在评估一件商品的价值。虽然花了以前两倍的钱，但该死的，那感觉太刺激了。", reply: "大叔，你的钱包比你的人诚实多了哦~ 💖" },
+            { text: "千万别被她无害的外表骗了！那个梨涡是陷阱！带她去电玩城，她玩游戏时的眼神专注得可怕，赢了之后那个胜利的坏笑...咳，我想我可能爱上被虐的感觉了。", reply: "是你太菜了啦，下次再练练？🎮" },
+            { text: "她很神秘。虽然笑得很甜，但总感觉她在心里筑了一道墙。这种若即若离的距离感反而让人更想接近。她是那种如果你不真心，会被瞬间反杀的类型。", reply: "哎呀，被发现了？看来你是那个值得期待的“对手”呢。🧐" },
+            { text: "第一次见到把约会当成RPG游戏来攻略的女孩子。她会给你设置任务，如果你完成了，奖励真的非常...令人难忘。", reply: "那是给优秀玩家的特别福利哦。🎁" },
+            { text: "因为迟到了5分钟，被她罚款了，还被晾了半小时。但当她终于肯理我的时候，那种失而复得的欣喜感简直让我疯了。", reply: "时间就是金钱，下次注意哦。⏱️" },
+            { text: "带她去了高级餐厅，她的礼仪完美无缺，但在桌子底下踢我的脚，用眼神挑衅我。这顿饭吃得我心脏狂跳。", reply: "你的表情管理还要加强呢，差点就穿帮了。👠" },
+            { text: "绝对不要试图对她说教。上一个试图这么做的家伙已经被拉黑了。她只喜欢强者，或者...彻底的臣服者。", reply: null },
+            { text: "她的情商高得可怕，总是能精准地踩在你的爽点和痛点上。这是一场危险的博弈，但我不想退出。", reply: "那就要看你能坚持到第几关了？🎲" },
+            { text: "虽然嘴巴很毒，但其实...不，她心也挺狠的。但我就是喜欢她这种不加掩饰的恶劣。", reply: null },
+            { text: "为了看她一次真实的笑容，我大概把这辈子的运气都花光了。", reply: "笨蛋，那只是因为今天的甜点很好吃而已。🍰" }
+        ];
+
+        const ayaneTemplates = [
+            { text: "声音绝了！真的像春风拂面一样。虽然我是第一次玩这个，但绾音酱完全没有让我感到尴尬，那种被认真倾听的感觉太好了。已列入长期关注名单！", reply: "T君的夸奖让我脸红啦😳 下次再一起聊聊那本小说吧！" },
+            { text: "非常专业的治愈系女友。我压力很大，她特意找了很安静的店。虽然年轻，但意外地很懂事，这种反差萌太戳我了。", reply: "看到K君眉头舒展的样子，我也很开心呢~" },
+            { text: "细节控！只是随口说喜欢抹茶，第二次约会她居然记住了。这么用心的女孩子去哪里找？在公园散步的时候感觉世界都变慢了。", reply: "因为关于你的事情，我都想记得呀 🍵" },
+            { text: "带她去了神保町的旧书店，她看到绝版书时眼睛亮晶晶的样子太可爱了。我们什么都没做，只是静静地看书，却觉得无比充实。", reply: "那本书的结局真的很感人呢...📚" },
+            { text: "她的声音有魔法。只是听她读了一段诗，这周加班的疲惫好像都消失了。强推给所有社畜。", reply: "我会一直做你的树洞的。👂" },
+            { text: "不想让别人知道她的好，好想独占。她是那种会让你想为了未来努力的女孩子。", reply: "谢谢你的喜欢，我也很期待下次见面。✨" },
+            { text: "约会的时候下雨了，她撑着伞笑着说“这样世界就只剩下我们了”。那一刻我真的心动了。", reply: "雨天的东京也别有一番风味呢。☔" },
+            { text: "虽然很害羞，但会认真地回应我的每一个话题。和她在一起，感觉自己被温柔地接纳了。", reply: null },
+            { text: "从来没有见过这么干净的眼神。在这个浮躁的城市里，她像是一个奇迹。", reply: "哎呀，不要开这种玩笑啦...😖" },
+            { text: "完美的倾听者，不会随意评判，只会温柔地注视着你。如果你想找人说话，选她绝对没错。", reply: null }
+        ];
+
+        const templates = charName === 'erina' ? erinaTemplates : ayaneTemplates;
+        const totalReviews = 20;
+
+        for(let i=0; i<totalReviews; i++) {
+            // Pick a random template, but try to use all of them
+            const t = templates[i % templates.length];
+            // Random user
+            const user = users[Math.floor(Math.random() * users.length)];
+            
+            // Randomize Rating (Strictly 3.5, 4.0, 4.5, 5.0)
+            const rRating = Math.random();
+            let rating = "5.0";
+            let stars = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
+            
+            if (rRating < 0.05) {
+                rating = "3.5";
+                stars = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><i class="far fa-star"></i>';
+            } else if (rRating < 0.20) {
+                rating = "4.0";
+                stars = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>';
+            } else if (rRating < 0.50) {
+                rating = "4.5";
+                stars = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>';
+            }
+            // else 5.0
+
+            // Randomize Content slightly
+            let content = t.text;
+            if (Math.random() > 0.7) content += " (补充：真的非常推荐，下次还会再来！)";
+            
+            // Randomize User Replies (Allow multiple replies)
+            let userReplies = [];
+            // 60% chance to have at least one reply
+            if (Math.random() > 0.4) {
+                // Determine number of replies: 1 (70%), 2 (20%), 3 (10%)
+                let replyCount = 1;
+                const rCount = Math.random();
+                if (rCount > 0.9) replyCount = 3;
+                else if (rCount > 0.7) replyCount = 2;
+
+                for(let k=0; k<replyCount; k++) {
+                     const replyUser = users[Math.floor(Math.random() * users.length)];
+                     const replyText = randomUserReplies[Math.floor(Math.random() * randomUserReplies.length)];
+                     userReplies.push({ user: replyUser, text: replyText });
+                }
+            }
+
+            reviews.push({
+                user: user,
+                rating: rating,
+                stars: stars,
+                date: `${Math.floor(Math.random()*30)+1}天前`,
+                text: content,
+                reply: t.reply,
+                userReplies: userReplies
+            });
+        }
+        
+        // Shuffle reviews so templates aren't in order
+        return reviews.sort(() => Math.random() - 0.5);
+    }
+
+    // Database
+    const db = {
+        erina: {
+            name: "Erina",
+            fullName: "如月绘里奈",
+            tagline: "S级 | 小恶魔系 / 享乐主义者",
+            rate: "¥10,000",
+            rating: "4.9 ★",
+            age: "18",
+            type: "电玩 / 抖S",
+            hero: "https://gitgud.io/ESVigan/picture/-/raw/master/%E7%BB%98%E9%87%8C%E5%A5%88.png",
+            avatar: "https://gitgud.io/ESVigan/picture/-/raw/master/%E8%A7%92%E8%89%B2%E5%8D%A1/126d0d6b-9e45-4dd0-8bc4-5f8986fd654e.png",
+            bio: "哟，新的挑战者？👀\n正在屏幕前打量我的你，现在在想什么？\n\n别白费力气啦，你看到的，都是我让你看到的。我是绘里奈。对我来说，这个世界就是一个巨大的游乐场，而绝大多数人只是只会说重复台词的NPC。\n\n我很任性，爱撒谎，喜欢看你在我的语言陷阱里手足无措的样子。如果你想找个乖乖听话的玩偶，出门右转不送。👋",
+            map: "🌆 不夜城模式：任何有趣的地方（只要不是无聊的私人住宅）\n🕹️ 娱乐场所：游戏厅、逃脱密室、高空酒吧、深夜的便利店\n⚠️ 拒绝访问：任何让我觉得“无聊”的场所（无聊是重罪！）",
+            mapTags: ["#游乐园大冒险", "#电玩厅制霸", "#密室逃脱", "#高档餐厅"],
+            rules: "🚫 禁止：任何性意味的接触、接吻、以及试图带我回家的行为。\n🚫 警告：我有完善的“危险信号识别系统”。一旦触碰底线，游戏强制结束，你会被永久拉黑。\n🧱 隐私防火墙：不要问我住哪，不要问我的学校，不要问我的过去。\n🎁 奖励机制：如果你能坦率地表达你的欲望（只要不越界），或许能解锁我偶尔流露的真实表情哦？",
+            schedule: "起订时长：2小时起（太短的话，连前戏的心理博弈都不够呢）\n入场费：10,000 円 / hour\n特殊技能费：想要我配合你的特定剧本？没问题，只要加钱，我就是奥斯卡影后。🎭",
+            posts: [
+                {
+                    id: 1, type: 'feed', date: "2小时前", likes: 1204, comments: 2,
+                    text: "刚刚让一个客户为了我的新限定版游戏机买单。他居然还谢谢我。男人真是单纯呢。🎮💅",
+                    detailComments: [{user:"东京迷走君", text:"这是我的荣幸！"}, {user:"GameMaster_X", text:"来单挑！"}]
+                },
+                {
+                    id: 2, type: 'feed', date: "1天前", likes: 890, comments: 1,
+                    text: "为什么总有人觉得“温柔”是褒义词？无聊。要危险，要有趣，要让人猜不透。😈",
+                    detailComments: [{user:"社畜也想谈恋爱", text:"确实，危险才迷人。"}]
+                }
+            ],
+            reviews: generateReviews('erina')
+        },
+        ayane: {
+            name: "Ayane",
+            fullName: "月宫绾音",
+            tagline: "新人 | 治愈系 / 文学少女",
+            rate: "¥8,000",
+            rating: "5.0 ★",
+            age: "19",
+            type: "文静 / 治愈",
+            hero: "https://gitgud.io/ESVigan/picture/-/raw/master/%E7%BB%BE%E9%9F%B3.png",
+            avatar: "https://gitgud.io/ESVigan/picture/-/raw/master/%E6%9E%97%E7%BB%9B.png",
+            bio: "初次见面，未来的男朋友，你好呀！👋\n\n我是刚来东京不久的绾音。在这个偌大的城市里，你是否也偶尔会感到一点点孤单呢？\n\n偷偷告诉你，我其实是个有点慢热的文学系女生。比起热闹的派对，我更喜欢和你躲进一家安静的咖啡馆，或者戴上同一副耳机听一首老歌。🎵",
+            map: "🏙️ 约会地点：让我们在阳光下、人群中（咖啡厅、商场、电影院）大方地展示幸福吧！\n🚫 达咩：私人住宅或偏僻角落是绝对不可以的哦！\n🚫 苦手场景：喧闹的夜店、蹦迪、过于社牛的大型社交。",
+            mapTags: ["#咖啡厅约会", "#公园散步", "#看电影", "#书店美术馆"],
+            rules: "👫 亲密距离：可以牵手漫步、轻轻挽着你的手臂。不可以接吻、过度拥抱。\n👗 着装风格：我会穿上最适合约会的甜美/知性风格。请不要要求过于暴露的服装哦。\n🤐 隐私守护：这是我们两个人的秘密时光，请不要打探我的现实身份。",
+            schedule: "🌙 平日晚间：18:00 - 22:00\n☀️ 周末全天：10:00 - 22:00\n💌 小贴士：为了最好的约会体验，请提前 3 天向我发起邀请函哦。",
+            posts: [
+                {
+                    id: 101, type: 'feed', date: "3小时前", likes: 450, comments: 2,
+                    text: "今天在神保町发现了一家很可爱的旧书店。旧纸张的味道真让人安心。📚",
+                    detailComments: [{user:"村上春树的猫", text:"求地址！"}, {user:"周末限定男友", text:"下次一起去吧。"}]
+                },
+                {
+                    id: 102, type: 'feed', date: "2天前", likes: 320, comments: 0,
+                    text: "谢谢K君的茶。看到你放松下来的样子，我也很开心呢。🍵",
+                    detailComments: []
+                }
+            ],
+            reviews: generateReviews('ayane')
+        },
+        locked: {
+            name: "Unknown",
+            fullName: "UNKNOWN",
+            tagline: "DATA NOT FOUND",
+            // ... minimal data for error handling if needed
+        }
+    };
+
+    let currentProfileId = null;
+
+    // Navigation Logic
+    function openProfile(id) {
+        currentProfileId = id;
+        const data = db[id];
+        if(!data) return;
+
+        // Populate Header Info
+        document.getElementById('p-hero').src = data.hero;
+        document.getElementById('p-avatar').src = data.avatar;
+        document.getElementById('p-bg-name').innerText = data.name.toUpperCase();
+        
+        // Mock Time - Removed
+        // const now = new Date();
+        // const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+        // document.getElementById('p-time-strip').innerText = `${days[now.getDay()]} >>>> ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+        document.getElementById('p-fullname').innerText = data.fullName;
+        document.getElementById('p-tagline').innerText = data.tagline;
+        document.getElementById('p-rate').innerText = data.rate;
+        document.getElementById('p-rating').innerText = data.rating;
+        document.getElementById('p-age').innerText = data.age;
+        document.getElementById('p-type').innerText = data.type;
+
+        // Populate Tab: Info
+        document.getElementById('p-bio').innerText = data.bio;
+        document.getElementById('p-map').innerText = data.map;
+        document.getElementById('p-rules').innerText = data.rules;
+        document.getElementById('p-schedule').innerText = data.schedule;
+        
+        const mapTags = document.getElementById('p-map-tags');
+        mapTags.innerHTML = data.mapTags.map(t => `<span class="tag">${t}</span>`).join('');
+
+        // Populate Tab: Feed
+        const feedContainer = document.getElementById('feed-container');
+        feedContainer.innerHTML = '';
+        data.posts.forEach(post => {
+            const el = document.createElement('div');
+            el.className = 'feed-item';
+            el.onclick = () => openDetail('feed', post);
+            el.innerHTML = `
+                <div class="f-top"><span style="font-weight:900">@${data.name}</span><span class="f-date">${post.date}</span></div>
+                <div class="f-content">${post.text}</div>
+                <div class="f-footer">
+                    <span class="f-act"><i class="far fa-heart"></i> ${post.likes}</span>
+                    <span class="f-act"><i class="far fa-comment"></i> ${post.comments}</span>
+                </div>
+            `;
+            feedContainer.appendChild(el);
+        });
+
+        // Populate Tab: Reviews
+        const reviewContainer = document.getElementById('reviews-container');
+        reviewContainer.innerHTML = '';
+        data.reviews.forEach(review => {
+            const el = document.createElement('div');
+            el.className = 'review-item';
+            el.onclick = () => openDetail('review', review);
+            
+            let replyIndicator = '';
+            // Show indicator if there is a heroine reply OR user replies
+            const hasHeroineReply = !!review.reply;
+            const hasUserReply = review.userReplies && review.userReplies.length > 0;
+
+            if(hasHeroineReply || hasUserReply) {
+                let text = [];
+                if(hasHeroineReply) text.push(`${data.fullName}`);
+                if(hasUserReply) text.push(`${review.userReplies.length}条回复`);
+                
+                replyIndicator = `<div class="r-reply-indicator"><i class="fas fa-reply"></i> ${text.join(' & ')}</div>`;
+            }
+
+            el.innerHTML = `
+                <div class="r-header">
+                    <span class="r-user">${review.user}</span>
+                    <span class="r-rating">${review.stars} <span style="color:#888;font-size:10px;">(${review.rating})</span></span>
+                </div>
+                <div class="r-text">${review.text}</div>
+                ${replyIndicator}
+            `;
+            reviewContainer.appendChild(el);
+        });
+
+        // Reset Tab
+        switchTab('info');
+
+        // Switch View
+        document.getElementById('view-select').classList.remove('active');
+        document.getElementById('view-profile').classList.add('active');
+    }
+
+    function goBack() {
+        document.getElementById('view-profile').classList.remove('active');
+        document.getElementById('view-select').classList.add('active');
+    }
+
+    function switchTab(tabName) {
+        // Update Headers
+        document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+        document.querySelector(`.tab-item[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+        // Update Content
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    // Detail Overlay Logic
+    function openDetail(type, item) {
+        const overlay = document.getElementById('overlay-detail');
+        const contentArea = document.getElementById('detail-content-area');
+        const title = document.getElementById('d-header-title');
+        const data = db[currentProfileId];
+
+        if (type === 'feed') {
+            title.innerText = "动态详情";
+            let commentsHtml = item.detailComments.map(c => `
+                <div class="comment-item">
+                    <div class="c-avatar" style="background:#ddd"></div>
+                    <div class="c-body"><div class="c-user">${c.user}</div><div>${c.text}</div></div>
+                </div>
+            `).join('') || '<div style="color:#999;font-size:12px;padding:10px;">暂无评论</div>';
+
+            contentArea.innerHTML = `
+                <div class="detail-main-box">
+                    <div style="display:flex;gap:10px;margin-bottom:10px;">
+                        <img src="${data.avatar}" style="width:40px;height:40px;border:2px solid black;">
+                        <div><div style="font-weight:900">${data.fullName}</div><div style="font-size:12px;color:#666">@${data.name}</div></div>
+                    </div>
+                    <div class="d-content">${item.text}</div>
+                    <div class="d-meta">${item.date} · 来自 Tomorrow's Girlfriend</div>
+                </div>
+                <div class="comment-section"><div class="comment-title" style="font-weight:bold;margin-bottom:10px;">评论</div>${commentsHtml}</div>
+            `;
+        } else if (type === 'review') {
+            title.innerText = "评价详情";
+            
+            // Heroine Reply
+            let replyHtml = '';
+            if (item.reply) {
+                replyHtml = `
+                    <div class="reply-box">
+                        <div class="reply-header" style="display:flex;align-items:center;gap:8px;margin-left:0;">
+                            <img src="${data.avatar}" style="width:30px;height:30px;border:2px solid var(--accent-pink);">
+                            <span>${data.fullName} 回复：</span>
+                        </div>
+                        <div class="reply-text" style="margin-left:38px;">${item.reply}</div>
+                    </div>
+                `;
+            }
+
+            // User Replies
+            let userRepliesHtml = '';
+            if (item.userReplies && item.userReplies.length > 0) {
+                userRepliesHtml = item.userReplies.map(r => `
+                    <div class="user-reply-box">
+                        <div class="user-reply-header">${r.user} 回复：</div>
+                        <div class="reply-text">${r.text}</div>
+                    </div>
+                `).join('');
+            }
+
+            contentArea.innerHTML = `
+                <div class="detail-main-box">
+                    <div class="r-header" style="margin-bottom:10px;">
+                        <span class="r-user" style="font-size:16px;">${item.user}</span>
+                        <span class="r-rating">${item.stars} <span style="color:#888;font-size:12px;">(${item.rating})</span></span>
+                    </div>
+                    <div class="d-content" style="font-size:14px;color:#333;">${item.text}</div>
+                    <div class="d-meta">评价时间：${item.date}</div>
+                    ${replyHtml}
+                    ${userRepliesHtml}
+                </div>
+            `;
+        }
+
+        overlay.classList.add('active');
+    }
+
+    function closeDetail(e) {
+        if(e && e.target !== e.currentTarget) return;
+        document.getElementById('overlay-detail').classList.remove('active');
+    }
+
+</script>
+
+</body>
+</html>

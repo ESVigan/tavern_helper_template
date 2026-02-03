@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TomorrowsGF_Home_CN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;900&family=Oswald:wght@700&family=Press+Start+2P&family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --line-color: #1a1a1a;
+            --accent-yellow: #feca57;
+            --accent-purple: #cd84f1;
+            --shadow-hard: 4px 4px 0 var(--line-color);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Noto Sans SC', sans-serif;
+            padding-bottom: 90px;
+            overflow-x: hidden;
+            color: var(--line-color);
+        }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--line-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line-color) 1px, transparent 1px);
+            background-size: 40px 40px; opacity: 0.05; z-index: -1;
+        }
+
+        /* === Header === */
+        .sys-header {
+            background: var(--line-color);
+            padding: 8px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            color: #fff; font-family: 'Oswald', sans-serif; font-size: 14px;
+        }
+
+        /* === 世界信息栏 (中文修正) === */
+        .world-info-bar {
+            background: #000;
+            color: #0f0; /* 终端绿 */
+            font-family: 'Noto Sans SC', monospace;
+            font-size: 11px; /* 稍微调大一点点方便阅读 */
+            padding: 6px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #333;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .world-blink { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* === 跑马灯 === */
+        .marquee-container {
+            background: var(--accent-yellow);
+            border-bottom: 2px solid #000;
+            border-top: 2px solid #000;
+            height: 24px;
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex; align-items: center;
+        }
+        .marquee-content {
+            display: inline-block;
+            font-size: 10px; font-weight: 900;
+            animation: scroll 15s linear infinite;
+            padding-left: 100%;
+        }
+        @keyframes scroll { 100% { transform: translateX(-100%); } }
+
+        /* === Hero Banner === */
+        .hero-banner {
+            margin: 15px;
+            background: #fff;
+            border: 3px solid var(--line-color);
+            padding: 15px;
+            position: relative;
+            box-shadow: var(--shadow-hard);
+            overflow: hidden;
+            height: 140px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .hero-left { z-index: 2; width: 40%; }
+        .hero-title {
+            font-family: 'Oswald', sans-serif; font-size: 24px; line-height: 0.9;
+            text-transform: uppercase; font-weight: 700;
+        }
+        .hero-sub {
+            background: #000; color: #fff; display: inline-block;
+            font-size: 9px; font-weight: bold; padding: 3px 6px; margin-top: 8px;
+            transform: skewX(-10deg);
+        }
+
+        .hero-right {
+            z-index: 2; width: 60%; text-align: right;
+            position: relative;
+        }
+        .logo-main {
+            font-family: 'Rubik Glitch', cursive;
+            font-size: 38px;
+            line-height: 0.85;
+            color: var(--line-color);
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+        }
+        .logo-highlight { color: #ff4757; }
+        .since-tag {
+            font-family: 'Oswald', sans-serif; font-size: 10px; 
+            letter-spacing: 2px; color: #888; margin-top: 5px;
+        }
+
+        /* === 列表 === */
+        .archive-list { padding: 0 15px; display: flex; flex-direction: column; gap: 15px; }
+
+        .archive-card {
+            background: #fff; border: 2.5px solid var(--line-color);
+            display: flex; position: relative; 
+            height: 135px;
+            box-shadow: var(--shadow-hard); transition: transform 0.1s;
+            text-decoration: none; color: inherit;
+        }
+        .archive-card:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--line-color); }
+
+        .card-avatar-box {
+            width: 110px; border-right: 2.5px solid var(--line-color); padding: 5px;
+            background: repeating-linear-gradient(45deg, #eee, #eee 5px, #fff 5px, #fff 10px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .avatar-img { width: 90px; height: 90px; object-fit: cover; border: 2px solid var(--line-color); }
+
+        .card-info-box {
+            flex: 1; padding: 10px 10px 25px 10px;
+            display: flex; flex-direction: column; 
+            position: relative;
+        }
+
+        .info-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .name-main { font-size: 16px; font-weight: 900; line-height: 1; }
+        .name-sub { font-size: 9px; color: #888; font-weight: 700; text-transform: uppercase; margin-top: 3px;}
+        
+        .rank-badge {
+            font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: bold;
+            background: #000; color: #fff; padding: 2px 6px; border-radius: 4px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .rank-badge i { font-size: 10px; color: gold; }
+
+        .stats-row { display: flex; gap: 10px; margin-bottom: auto; }
+        .stat-col { flex: 1; }
+        .stat-label { font-size: 8px; font-weight: 700; margin-bottom: 2px; display: flex; justify-content: space-between; }
+        .mini-progress { height: 6px; background: #eee; border: 1px solid #000; border-radius: 3px; overflow: hidden; }
+        .mini-fill { height: 100%; width: 0%; }
+
+        .tags-row { display: flex; gap: 5px; margin-bottom: 5px; }
+        .tag {
+            font-size: 9px; border: 1.5px solid var(--line-color);
+            padding: 1px 6px; font-weight: 700; border-radius: 10px;
+        }
+
+        .status-strip {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 18px;
+            border-top: 2.5px solid var(--line-color);
+            display: flex; align-items: center; justify-content: flex-end;
+            padding: 0 10px; font-size: 9px; font-weight: 900; gap: 5px;
+        }
+        .status-light { width: 8px; height: 8px; border-radius: 50%; border: 1px solid #000; }
+
+        /* 样式微调 */
+        .card-erina .status-strip { background: var(--accent-yellow); }
+        .card-erina .status-light { background: #0f0; }
+        .card-erina .rank-badge { color: var(--accent-yellow); }
+        .card-erina .mini-fill { background: var(--accent-yellow); }
+
+        .card-kanon .status-strip { background: var(--accent-purple); color: #fff; }
+        .card-kanon .status-light { background: #f00; }
+        .card-kanon .rank-badge { color: var(--accent-purple); }
+        .card-kanon .mini-fill { background: var(--accent-purple); }
+
+        .card-locked { opacity: 0.6; filter: grayscale(1); }
+        .card-locked .status-strip { background: #ccc; }
+
+        /* 底部导航 */
+        .dock-nav {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 85%; height: 60px; background: #000; border-radius: 16px;
+            display: flex; justify-content: space-around; align-items: center;
+            border: 2px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.4); z-index: 200;
+        }
+        .nav-btn { color: #666; font-size: 22px; position: relative; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+        .nav-btn.active { color: #fff; }
+        .nav-btn.active::after { content: ''; position: absolute; bottom: -8px; width: 4px; height: 4px; background: #fff; border-radius: 50%; }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+
+    <!-- Header -->
+    <header class="sys-header">
+        <div><i class="fas fa-database"></i> SYS_V4.0</div>
+        <div>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full" style="margin-left:10px"></i>
+        </div>
+    </header>
+
+    <!-- 修正后的中文信息栏 -->
+    <div class="world-info-bar">
+        <div>2025年10月12日 星期日</div>
+        <div><i class="fas fa-map-marker-alt world-blink"></i> 下午 19:00 新宿歌舞伎町</div>
+    </div>
+
+    <!-- 跑马灯 -->
+    <div class="marquee-container">
+        <div class="marquee-content">
+             ⚠ 警告：检测到非法私联行为，请遵守《租借法》 // ✨ 新人推荐：月宫绾音人气飙升中！ // ⭐ 系统公告：好感度算法已更新 v4.2...
+        </div>
+    </div>
+
+    <!-- Banner -->
+    <div class="hero-banner">
+        <div class="hero-left">
+            <div class="hero-title">ACCESS<br>YOUR<br>DESTINY</div>
+            <div class="hero-sub">/// 24H EMOTIONAL SUPPORT</div>
+        </div>
+        
+        <div class="hero-right">
+            <div class="logo-main">Tomorrows<br><span class="logo-highlight">Girlfriend</span></div>
+            <div class="since-tag">EST. 2025 TOKYO</div>
+        </div>
+    </div>
+
+    <!-- 列表 -->
+    <div class="archive-list">
+
+        <!-- 角色 1 -->
+        <a href="erina.html" class="archive-card card-erina">
+            <div class="card-avatar-box">
+                <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E8%A7%92%E8%89%B2%E5%8D%A1/126d0d6b-9e45-4dd0-8bc4-5f8986fd654e.png" class="avatar-img">
+            </div>
+            <div class="card-info-box">
+                <div class="info-header">
+                    <div>
+                        <div class="name-main">如月 绘里奈</div>
+                        <div class="name-sub">KISARAGI ERINA</div>
+                    </div>
+                    <div class="rank-badge"><i class="fas fa-crown"></i> TOP 1</div>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-col">
+                        <div class="stat-label"><span>LOVE</span><span>0%</span></div>
+                        <div class="mini-progress"><div class="mini-fill" style="width:0%"></div></div>
+                    </div>
+                    <div class="stat-col">
+                        <div class="stat-label"><span>TRUST</span><span>0%</span></div>
+                        <div class="mini-progress"><div class="mini-fill" style="width:0%"></div></div>
+                    </div>
+                </div>
+
+                <div class="tags-row">
+                    <span class="tag" style="background:var(--accent-yellow)">完美</span>
+                    <span class="tag">査定对象</span>
+                </div>
+
+                <div class="status-strip">
+                    <div class="status-light"></div>
+                    <span>AVAILABLE / 营业中</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 角色 2 -->
+        <a href="kanon.html" class="archive-card card-kanon">
+            <div class="card-avatar-box">
+                <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E6%9E%97%E7%BB%9B.png" class="avatar-img">
+            </div>
+            <div class="card-info-box">
+                <div class="info-header">
+                    <div>
+                        <div class="name-main">月宫 绾音</div>
+                        <div class="name-sub">MAMIYA KANON</div>
+                    </div>
+                    <div class="rank-badge"><i class="fas fa-caret-up"></i> TOP 7</div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-col">
+                        <div class="stat-label"><span>LOVE</span><span>0%</span></div>
+                        <div class="mini-progress"><div class="mini-fill" style="width:0%"></div></div>
+                    </div>
+                    <div class="stat-col">
+                        <div class="stat-label"><span>TRUST</span><span>0%</span></div>
+                        <div class="mini-progress"><div class="mini-fill" style="width:0%"></div></div>
+                    </div>
+                </div>
+                
+                <div class="tags-row">
+                    <span class="tag" style="background:var(--accent-purple); color:#fff">偶像</span>
+                    <span class="tag">新人</span>
+                </div>
+
+                <div class="status-strip">
+                    <div class="status-light"></div>
+                    <span>BUSY / 待机中...</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 锁定 -->
+        <div class="archive-card card-locked">
+            <div class="card-avatar-box">
+                <div style="font-size:30px; font-weight:bold;">?</div>
+            </div>
+            <div class="card-info-box">
+                <div class="info-header">
+                    <div>
+                        <div class="name-main">UNKNOWN</div>
+                        <div class="name-sub">DATA NOT FOUND</div>
+                    </div>
+                    <div class="rank-badge">LOCKED</div>
+                </div>
+                
+                <div class="stats-row" style="opacity:0.3">
+                    <div class="stat-col"><div class="mini-progress"></div></div>
+                    <div class="stat-col"><div class="mini-progress"></div></div>
+                </div>
+
+                <div class="tags-row">
+                    <span class="tag">即将登场</span>
+                </div>
+
+                <div class="status-strip">
+                    <span>OFFLINE</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Dock -->
+    <nav class="dock-nav">
+        <a href="#" class="nav-btn active"><i class="fas fa-home"></i></a>
+        <a href="#" class="nav-btn"><i class="fas fa-compass"></i></a>
+        <a href="聊天界面.HTML" class="nav-btn"><i class="fas fa-comment-dots"></i></a>
+        <a href="个人主页.html" class="nav-btn"><i class="fas fa-user-circle"></i></a>
+    </nav>
+
+</body>
+</html>

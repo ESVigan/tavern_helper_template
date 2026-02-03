@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tomorrow's Girlfriend - Messages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Oswald:wght@700&family=Press+Start+2P&family=Rubik+Glitch&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --line-color: #1a1a1a;
+            --accent-yellow: #feca57;
+            --accent-purple: #cd84f1;
+            --player-bubble: #fff;
+            --player-text: #000;
+            --badge-red: #ff4757;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0; padding: 0;
+            width: 100vw; height: 100vh;
+            background-color: transparent;
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--line-color);
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ========== 容器 ========== */
+        .page-container {
+            position: relative;
+            width: 100%; aspect-ratio: 3 / 4;
+            max-width: calc(100vh * 3 / 4); max-height: 100vh;
+            min-height: 550px; min-width: 300px;
+            background-color: #fff;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow: hidden; margin: auto;
+            display: flex; flex-direction: column;
+        }
+
+        .bg-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px);
+            background-size: 20px 20px; opacity: 0.5; z-index: 0; pointer-events: none;
+        }
+
+        /* ========== 视图切换逻辑 ========== */
+        .view-section {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fff; z-index: 10;
+        }
+        #view-list { transform: translateX(0); z-index: 20; }
+        #view-list.hidden { transform: translateX(-30%); }
+        #view-detail { transform: translateX(100%); z-index: 30; }
+        #view-detail.active { transform: translateX(0); }
+
+        /* ========== 顶部栏 (修改版) ========== */
+        .chat-header {
+            flex-shrink: 0; height: 55px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px; border-bottom: 2px solid var(--line-color);
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(5px);
+            z-index: 50;
+        }
+        /* 修改：使用平台品牌字体 */
+        .brand-title { 
+            font-family: 'Rubik Glitch', cursive; 
+            font-size: 20px; 
+            color: var(--line-color);
+            line-height: 1;
+            display: flex; align-items: center; gap: 8px;
+        }
+        
+        /* 修改：放大的总消息数徽章 */
+        .total-badge {
+            background: var(--badge-red); color: #fff;
+            font-family: 'Oswald', sans-serif;
+            font-size: 12px; padding: 2px 8px;
+            border-radius: 12px;
+            vertical-align: middle;
+            transform: translateY(-2px);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        /* 当数量为0时隐藏 */
+        .total-badge.hidden { display: none; }
+
+        .header-btn { font-size: 18px; cursor: pointer; color: #333; }
+        .detail-header-info { display: flex; align-items: center; gap: 10px; }
+        .header-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #000; object-fit: cover; }
+        .header-name { font-weight: 900; font-size: 14px; }
+
+        /* ========== 列表视图样式 ========== */
+        .chat-list { flex: 1; overflow-y: auto; padding: 10px 0; }
+        .chat-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px; cursor: pointer;
+            transition: background 0.2s; border-bottom: 1px solid #eee;
+        }
+        .chat-item:hover { background: #f5f5f5; }
+        .item-avatar-box { position: relative; }
+        .item-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--line-color); object-fit: cover; }
+        
+        /* 列表项的具体未读数 */
+        .item-badge {
+            position: absolute; top: -2px; right: -2px;
+            background: var(--badge-red); color: #fff; 
+            font-size: 10px; font-weight: bold;
+            padding: 1px 5px; min-width: 18px; text-align: center;
+            border-radius: 10px; border: 1.5px solid #fff;
+            transition: opacity 0.3s;
+        }
+        .item-badge.hidden { opacity: 0; }
+
+        .item-content { flex: 1; min-width: 0; }
+        .item-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .item-name { font-weight: 900; font-size: 14px; }
+        .item-time { font-size: 10px; color: #999; font-weight: 700; }
+        .item-msg { font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ========== 详情视图样式 ========== */
+        .chat-history {
+            flex: 1; overflow-y: auto; padding: 15px;
+            display: flex; flex-direction: column; gap: 15px;
+            background: #f4f4f7;
+        }
+        .date-divider { text-align: center; margin: 10px 0; }
+        .date-tag { background: #ddd; color: #666; font-size: 10px; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+        
+        /* 消息行 */
+        .msg-row { display: flex; align-items: flex-start; margin: 0; padding: 0; max-width: 100%; transition: all 0.3s ease; }
+        .msg-row.right { flex-direction: row-reverse; }
+        .msg-avatar { width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; margin-right: 10px; flex-shrink: 0; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        .right .msg-avatar { margin-right: 0; margin-left: 10px; border: 2px solid #000; }
+        .msg-content-wrapper { max-width: calc(100% - 60px); display: flex; flex-direction: column; }
+        .left .msg-content-wrapper { align-items: flex-start; }
+        .right .msg-content-wrapper { align-items: flex-end; }
+        .msg-name { font-size: 11px; font-weight: 700; margin-bottom: 4px; margin-left: 4px; }
+        
+        .msg-bubble { display: inline-block; padding: 10px 14px; font-size: 14px; line-height: 1.5; word-wrap: break-word; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; }
+        .right .msg-bubble { background: #fff; color: #000; border-radius: 18px 4px 18px 18px; border: 1px solid #ddd; }
+        .style-kanon .msg-avatar { border: 2px solid var(--accent-yellow); }
+        .style-kanon .msg-name { color: #b8860b; }
+        .style-kanon .msg-bubble { border-radius: 4px 18px 18px 18px; background: linear-gradient(145deg, #2b2b2b, #1a1a1a); color: #feca57; border: 1px solid rgba(254, 202, 87, 0.3); box-shadow: 0 3px 10px rgba(254, 202, 87, 0.15), inset 1px 1px 2px rgba(255,255,255,0.05); }
+        .style-erina .msg-avatar { border: 2px solid var(--accent-purple); }
+        .style-erina .msg-name { color: var(--accent-purple); }
+        .style-erina .msg-bubble { border-radius: 4px 18px 18px 18px; background: linear-gradient(145deg, #1e1a24, #121016); color: #e8e0f3; box-shadow: 0 2px 8px rgba(138, 43, 226, 0.25), inset 1px 1px 2px rgba(255, 255, 255, 0.05); }
+
+        /* 内容类型 */
+        .placeholder-block { width: 180px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); color: inherit; gap: 5px; border-radius: 4px; }
+        .placeholder-text { font-size: 10px; font-weight: bold; opacity: 0.8; }
+        .voice-wrapper { display: flex; flex-direction: column; min-width: 160px; }
+        .voice-player { display: flex; align-items: center; gap: 10px; height: 24px; margin-bottom: 8px; }
+        .voice-icon { font-size: 16px; }
+        .voice-wave { flex: 1; display: flex; align-items: center; gap: 2px; height: 100%; }
+        .wave-bar { width: 3px; background: currentColor; opacity: 0.6; border-radius: 2px; }
+        .wave-bar:nth-child(odd) { height: 60%; }
+        .wave-bar:nth-child(even) { height: 100%; }
+        .voice-time { font-size: 12px; font-weight: bold; opacity: 0.8; }
+        .voice-transcription { font-size: 13px; line-height: 1.4; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.2); opacity: 0.95; }
+        .right .voice-transcription { border-top-color: #ddd; }
+        .call-box { min-width: 160px; display: flex; flex-direction: column; gap: 8px; }
+        .call-header { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: 0.7; font-weight: bold; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 4px;}
+        .right .call-header { border-bottom-color: #ddd; }
+        .call-action { display: flex; justify-content: space-between; align-items: center; }
+        .call-status { font-size: 12px; font-weight: bold; }
+        .call-btn { font-size: 10px; padding: 4px 10px; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); cursor: pointer; }
+        .right .call-btn { background: #000; color: #fff; }
+        .msg-meta { font-size: 9px; opacity: 0.6; margin-top: 4px; text-align: right; font-weight: 700; }
+        .left .msg-meta { text-align: left; margin-left: 2px; }
+
+        .chat-input-bar { flex-shrink: 0; background: #fff; border-top: 2px solid var(--line-color); padding: 10px; display: flex; align-items: center; gap: 8px; z-index: 50; }
+        .input-btn { width: 32px; height: 32px; flex-shrink: 0; border: 2px solid var(--line-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #333; cursor: pointer; }
+        .input-field { flex: 1; height: 36px; border: 2px solid var(--line-color); border-radius: 20px; padding: 0 12px; font-size: 14px; background: #f9f9f9; outline: none; }
+        .send-btn { background: var(--line-color); color: #fff; border: none; }
+
+        /* ========== 底部导航 & 红点逻辑 ========== */
+        .dock-nav {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 85%; height: 50px; background: #000; border-radius: 16px;
+            display: flex; justify-content: space-around; align-items: center;
+            border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); 
+            z-index: 100;
+        }
+        .nav-btn { color: #666; font-size: 20px; cursor: pointer; position: relative; text-decoration: none; display: flex; align-items: center; justify-content: center; height: 100%; }
+        .nav-btn.active { color: #fff; }
+        .nav-btn.active::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #fff; border-radius: 50%; }
+
+        /* 修改：导航栏红点 */
+        .nav-dot {
+            position: absolute; top: -2px; right: -2px;
+            width: 8px; height: 8px; background: var(--badge-red);
+            border-radius: 50%; border: 1.5px solid #000;
+            display: none; /* 默认隐藏，JS控制显示 */
+        }
+        .nav-dot.visible { display: block; }
+
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        <div class="bg-grid"></div>
+
+        <!-- 列表视图 -->
+        <div class="view-section" id="view-list">
+            <div class="chat-header">
+                <div class="brand-title">
+                    TOMORROW'S GIRLFRIEND
+                    <!-- 修改：总未读数徽章 -->
+                    <span id="total-unread" class="total-badge">0</span>
+                </div>
+                <div class="header-btn"><i class="fas fa-search"></i></div>
+            </div>
+            <div class="chat-list">
+                <div class="chat-item" onclick="loadChat('erina')">
+                    <div class="item-avatar-box">
+                        <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E8%A7%92%E8%89%B2%E5%8D%A1/126d0d6b-9e45-4dd0-8bc4-5f8986fd654e.png" class="item-avatar">
+                        <!-- 修改：具体的未读数 ID -->
+                        <div id="badge-erina" class="item-badge">1</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-top"><div class="item-name">Kisara_Erina</div><div class="item-time">18:05</div></div>
+                        <div class="item-msg">[语音消息] 3"</div>
+                    </div>
+                </div>
+                <div class="chat-item" onclick="loadChat('kanon')">
+                    <div class="item-avatar-box">
+                        <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E6%9E%97%E7%BB%9B.png" class="item-avatar">
+                        <!-- 修改：具体的未读数 ID -->
+                        <div id="badge-kanon" class="item-badge">3</div>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-top"><div class="item-name">Mamiya_Kanon</div><div class="item-time">Yesterday</div></div>
+                        <div class="item-msg">[视频通话] 通话时长 24:10</div>
+                    </div>
+                </div>
+            </div>
+            <nav class="dock-nav">
+                <a href="首页.HTML" class="nav-btn"><i class="fas fa-home"></i></a>
+                <a href="#" class="nav-btn"><i class="fas fa-compass"></i></a>
+                <a href="#" class="nav-btn active">
+                    <i class="fas fa-comment-dots"></i>
+                    <!-- 修改：导航栏红点 -->
+                    <div id="nav-red-dot" class="nav-dot"></div>
+                </a>
+                <a href="个人主页.html" class="nav-btn"><i class="fas fa-user-circle"></i></a>
+            </nav>
+        </div>
+
+        <!-- 详情视图 -->
+        <div class="view-section" id="view-detail">
+            <div class="chat-header">
+                <div class="header-btn" onclick="closeChat()"><i class="fas fa-chevron-left"></i></div>
+                <div class="detail-header-info">
+                    <img src="" id="chat-header-avatar" class="header-avatar">
+                    <span class="header-name" id="chat-header-name">NAME</span>
+                </div>
+                <div class="header-btn"><i class="fas fa-bars"></i></div>
+            </div>
+
+            <div class="chat-history" id="chat-box"></div>
+
+            <div class="chat-input-bar">
+                <div class="input-btn"><i class="fas fa-plus"></i></div>
+                <input type="text" class="input-field" placeholder="Type message...">
+                <div class="input-btn send-btn"><i class="fas fa-paper-plane"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 角色数据，包含未读数 (unread)
+        const characters = {
+            erina: {
+                name: 'Kisara_Erina',
+                avatar: 'https://gitgud.io/ESVigan/picture/-/raw/master/%E8%A7%92%E8%89%B2%E5%8D%A1/126d0d6b-9e45-4dd0-8bc4-5f8986fd654e.png',
+                styleClass: 'style-erina',
+                unread: 1, // 初始未读
+                messages: [
+                    { type: 'text', side: 'left', content: '今天的工作终于结束啦！累死我了~ 💦', time: '18:00' },
+                    { type: 'text', side: 'right', content: '辛苦了，晚上去吃点好的？', time: '18:01' },
+                    { type: 'image', side: 'left', content: 'Image_001.jpg', time: '18:02' }, 
+                    { type: 'video', side: 'right', content: 'Video_Clip.mp4', time: '18:03' },
+                    { type: 'voice', side: 'left', content: '其实，我腿都站酸了...能不能背我一下？', duration: '5"', time: '18:05' }, 
+                    { type: 'call_video', side: 'right', content: '24:10', time: '18:10' },
+                    { type: 'call_voice', side: 'left', content: 'Missed Call', time: '18:30' }
+                ]
+            },
+            kanon: {
+                name: 'Mamiya_Kanon',
+                avatar: 'https://gitgud.io/ESVigan/picture/-/raw/master/%E6%9E%97%E7%BB%9B.png',
+                styleClass: 'style-kanon',
+                unread: 3, // 初始未读
+                messages: [
+                    { type: 'text', side: 'left', content: '那个...明天的练习，我会加油的。🎤', time: '21:00' },
+                    { type: 'text', side: 'right', content: '加油，我会一直看着你的。', time: '21:05' },
+                    { type: 'image', side: 'left', content: 'Mic_Photo.jpg', time: '21:06' },
+                    { type: 'voice', side: 'left', content: '谢...谢谢你，经纪人先生。', duration: '3"', time: '21:07' }
+                ]
+            }
+        };
+
+        // 更新徽章逻辑
+        function updateBadges() {
+            let totalUnread = 0;
+            
+            for (const [key, char] of Object.entries(characters)) {
+                totalUnread += char.unread;
+                
+                // 更新列表中的小红点数字
+                const badgeEl = document.getElementById(`badge-${key}`);
+                if (badgeEl) {
+                    badgeEl.innerText = char.unread;
+                    if (char.unread > 0) {
+                        badgeEl.classList.remove('hidden');
+                    } else {
+                        badgeEl.classList.add('hidden');
+                    }
+                }
+            }
+
+            // 更新标题栏总数
+            const totalEl = document.getElementById('total-unread');
+            totalEl.innerText = totalUnread;
+            if (totalUnread > 0) {
+                totalEl.classList.remove('hidden');
+                document.getElementById('nav-red-dot').classList.add('visible'); // 底部导航红点亮起
+            } else {
+                totalEl.classList.add('hidden');
+                document.getElementById('nav-red-dot').classList.remove('visible'); // 底部导航红点消失
+            }
+        }
+
+        // 初始化徽章
+        updateBadges();
+
+        function loadChat(charId) {
+            const data = characters[charId];
+            if (!data) return;
+
+            // 1. 清除未读数
+            data.unread = 0;
+            updateBadges(); // 重新计算UI
+
+            // 2. 设置头部
+            document.getElementById('chat-header-name').innerText = data.name;
+            document.getElementById('chat-header-avatar').src = data.avatar;
+
+            // 3. 生成消息HTML
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = '<div class="date-divider"><span class="date-tag">Today</span></div>'; 
+
+            data.messages.forEach(msg => {
+                const isLeft = msg.side === 'left';
+                const avatarUrl = isLeft ? data.avatar : ''; 
+                
+                let bubbleContent = '';
+                
+                if (msg.type === 'text') {
+                    bubbleContent = msg.content;
+                } 
+                else if (msg.type === 'image') {
+                    bubbleContent = `
+                        <div class="placeholder-block">
+                            <i class="far fa-image" style="font-size:20px;"></i>
+                            <span class="placeholder-text">PHOTO SENT</span>
+                        </div>`;
+                }
+                else if (msg.type === 'video') {
+                    bubbleContent = `
+                        <div class="placeholder-block" style="background:#333; color:#fff">
+                            <i class="fas fa-play-circle" style="font-size:24px;"></i>
+                            <span class="placeholder-text">VIDEO SENT</span>
+                        </div>`;
+                }
+                else if (msg.type === 'voice') {
+                    bubbleContent = `
+                        <div class="voice-wrapper">
+                            <div class="voice-player">
+                                <i class="fas fa-play voice-icon"></i>
+                                <div class="voice-wave">
+                                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                                    <div class="wave-bar"></div><div class="wave-bar"></div>
+                                </div>
+                                <span class="voice-time">${msg.duration}</span>
+                            </div>
+                            <div class="voice-transcription">
+                                ${msg.content}
+                            </div>
+                        </div>`;
+                }
+                else if (msg.type === 'call_video') {
+                    bubbleContent = `
+                        <div class="call-box">
+                            <div class="call-header"><i class="fas fa-video"></i> Video Call</div>
+                            <div class="call-action">
+                                <span class="call-status">${msg.content}</span>
+                                <div class="call-btn">Call Back</div>
+                            </div>
+                        </div>`;
+                }
+                else if (msg.type === 'call_voice') {
+                    bubbleContent = `
+                        <div class="call-box">
+                            <div class="call-header"><i class="fas fa-phone-alt"></i> Voice Call</div>
+                            <div class="call-action">
+                                <span class="call-status" style="color:#ff4757">${msg.content}</span>
+                                <div class="call-btn">Call Back</div>
+                            </div>
+                        </div>`;
+                }
+
+                const html = `
+                    <div class="msg-row ${msg.side} ${isLeft ? data.styleClass : ''}">
+                        ${isLeft ? `<div class="msg-avatar" style="background-image: url('${avatarUrl}')"></div>` : ''}
+                        <div class="msg-content-wrapper">
+                            ${isLeft ? `<div class="msg-name">${data.name.split('_')[1]}</div>` : ''}
+                            <div class="msg-bubble">
+                                ${bubbleContent}
+                            </div>
+                            <div class="msg-meta">${msg.time} ${!isLeft ? 'Read' : ''}</div>
+                        </div>
+                    </div>
+                `;
+                chatBox.insertAdjacentHTML('beforeend', html);
+            });
+
+            document.getElementById('view-list').classList.add('hidden');
+            document.getElementById('view-detail').classList.add('active');
+        }
+
+        function closeChat() {
+            document.getElementById('view-list').classList.remove('hidden');
+            document.getElementById('view-detail').classList.remove('active');
+        }
+    </script>
+
+</body>
+</htm

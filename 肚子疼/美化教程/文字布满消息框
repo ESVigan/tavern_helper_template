@@ -1,0 +1,14 @@
+/* 让消息框里的文字铺满消息框 */
+    .mes_block .ch_name,
+    .mes_block .mes_text {
+        width: 100%; /* 确保元素占据父元素内容区的全部宽度 */
+        box-sizing: border-box; /* 包含内边距和边框在宽度计算内 */
+        margin: 0; /* 移除所有外部边距 */
+        padding-left: 0; /* 移除可能存在的左侧内边距 */
+        padding-right: 0; /* 移除可能存在的右侧内边距 */
+    }
+
+    /* 保持 .mes_text 的顶部内边距 */
+    .mes_block .mes_text {
+        padding-top: calc(var(--mainFontSize) * 0.8);
+}

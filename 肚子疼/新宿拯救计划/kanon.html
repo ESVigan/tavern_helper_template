@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kanon_Full_Data</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Oswald:wght@700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f3eff5;
+            --line-color: #2d0046;
+            --accent-purple: #cd84f1;
+            --accent-cyan: #7efff5;
+            --card-white: #fff;
+            --shadow-hard: 5px 5px 0 var(--line-color);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Noto Sans SC', sans-serif;
+            height: 100vh; width: 100vw;
+            overflow: hidden; position: relative;
+            color: var(--line-color);
+        }
+
+        /* 背景层 */
+        .bg-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--line-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line-color) 1px, transparent 1px);
+            background-size: 50px 50px; opacity: 0.03; z-index: 0;
+        }
+
+        .big-typo-bg {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Oswald', sans-serif; font-size: 32vh; font-weight: 700;
+            color: #e5dceb; line-height: 0.8; z-index: 0;
+            white-space: nowrap; pointer-events: none; letter-spacing: -5px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .typo-outline { -webkit-text-stroke: 2px rgba(45, 0, 70, 0.1); color: transparent; }
+
+        /* 顶部装饰 */
+        .time-strip {
+            position: absolute; top: 60px; left: 0; width: 100%;
+            display: flex; justify-content: center; gap: 15px;
+            font-family: 'Oswald', sans-serif; font-size: 12px;
+            letter-spacing: 2px; color: var(--accent-purple); z-index: 5; opacity: 0.8;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            position: absolute; top: 0; left: 0; width: 100%; height: 50px;
+            background: var(--line-color); z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px; color: var(--accent-cyan);
+        }
+        .nav-title { 
+            font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 16px; 
+            letter-spacing: 1px; color: #fff; font-style: italic;
+        }
+
+        /* 核心立绘 */
+        .char-container {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center;
+            z-index: 10; pointer-events: none;
+        }
+        .char-img {
+            height: 94%; width: auto;
+            filter: drop-shadow(8px 8px 0px rgba(45,0,70,0.2));
+            transform: translateX(2%) rotate(-4deg); transform-origin: bottom center;
+            animation: breathe 5s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0% { transform: translateX(2%) rotate(-4deg) scale(1); }
+            50% { transform: translateX(2%) rotate(-4deg) scale(1.02) translateY(-6px); }
+            100% { transform: translateX(2%) rotate(-4deg) scale(1); }
+        }
+
+        /* 悬浮组件 */
+        .sticker {
+            position: absolute; background: var(--card-white);
+            border: 2.5px solid var(--line-color); border-radius: 8px;
+            box-shadow: var(--shadow-hard); z-index: 20; color: var(--line-color);
+        }
+
+        /* 关系阶段 (左上) */
+        .stage-box {
+            top: 90px; left: 15px; padding: 8px 12px;
+            background: var(--accent-cyan); animation: float 5s ease-in-out infinite;
+        }
+        .stage-label { font-size: 9px; font-weight: 900; opacity: 0.7; letter-spacing: 1px; }
+        .stage-val { font-size: 14px; font-weight: 900; margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+
+        /* 开关组 (右上) */
+        .switch-box {
+            top: 90px; right: 15px; padding: 6px 10px;
+            display: flex; flex-direction: column; gap: 6px;
+            animation: float 6s ease-in-out infinite 1s;
+        }
+        .switch-row { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; }
+        .toggle { width: 28px; height: 14px; border: 2px solid var(--line-color); border-radius: 20px; position: relative; }
+        .toggle-dot { width: 8px; height: 8px; background: var(--line-color); border-radius: 50%; position: absolute; top: 1px; left: 1px; }
+        .toggle.on { background: var(--line-color); }
+        .toggle.on .toggle-dot { left: auto; right: 1px; background: var(--accent-cyan); }
+
+        /* 头像档案 (右中) */
+        .avatar-card {
+            top: 190px; right: 15px; width: 100px; padding: 6px 6px 15px 6px;
+            transform: rotate(-3deg); z-index: 15; text-align: center;
+            background: #fff; animation: float-rotate-reverse 5s ease-in-out infinite;
+        }
+        .avatar-frame {
+            width: 100%; height: 80px; background: #222;
+            border: 2px solid var(--line-color); overflow: hidden; margin-bottom: 5px;
+        }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-tag { 
+            font-size: 10px; font-weight: 900; 
+            background: var(--line-color); color: var(--accent-cyan); 
+            padding: 2px 6px; 
+        }
+
+        /* === 状态面板 (左下 - 包含好感/信赖) === */
+        .status-wrapper {
+            position: absolute; top: 45%; left: 20px;
+            transform: translateY(-50%) rotate(2deg);
+            z-index: 25; width: 160px;
+        }
+        .status-panel {
+            position: relative; background: #fff;
+            border: 3px solid var(--line-color); border-radius: 12px;
+            padding: 15px; box-shadow: 6px 6px 0 var(--line-color);
+        }
+        .pixel-ghost {
+            position: absolute; top: -35px; right: -15px;
+            font-size: 40px; z-index: 30; filter: drop-shadow(2px 2px 0 #fff);
+            animation: bounce 2s infinite;
+        }
+        .stat-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+        .stat-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 900; }
+        
+        .progress-box { height: 12px; border: 2px solid var(--line-color); border-radius: 6px; background: #eee; position: relative; overflow: hidden; }
+        /* 信赖度使用不同的颜色填充 */
+        .trust-fill { width: 0%; background: var(--accent-purple); height:100%; }
+        .love-fill { width: 0%; background: var(--line-color); height:100%; }
+
+        .icon-row { display: flex; justify-content: space-between; border-top: 2px dashed #ddd; padding-top: 10px; }
+        .icon-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-weight: 700; color: #888; }
+        .icon-circle { width: 32px; height: 32px; border: 2px solid #aaa; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+        /* === 右下角标签组 (包含 CV/粉丝/真名) === */
+        .tags-group {
+            position: absolute; bottom: 155px; right: 15px;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 15;
+        }
+        .tag-item {
+            background: #fff; border: 2px solid var(--line-color); padding: 5px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 900; box-shadow: 2px 2px 0 #ccc; transform: rotate(2deg);
+            display: flex; align-items: center; gap: 5px;
+        }
+        /* 特殊样式的标签 */
+        .tag-cv { background: var(--accent-cyan); transform: rotate(-1deg); }
+        .tag-fans { background: #fff; transform: rotate(2deg); }
+        .tag-secret { 
+            background: var(--line-color); color: #fff; 
+            transform: rotate(-3deg); letter-spacing: 1px;
+        }
+
+        /* 底部区域 */
+        .bottom-area {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 130px;
+            background: linear-gradient(to top, #fff 80%, transparent);
+            padding: 0 15px; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 20px;
+            z-index: 30;
+        }
+        .name-wrapper { display: flex; align-items: flex-end; margin-bottom: 10px; }
+        .name-en {
+            font-family: 'Oswald', sans-serif; font-size: 56px; line-height: 0.8;
+            color: var(--line-color); font-weight: 700; font-style: italic; margin-right: 10px;
+        }
+        .name-cn-tag {
+            background: var(--accent-purple); color: #fff; font-size: 14px; font-weight: bold;
+            padding: 2px 8px; margin-bottom: 5px; transform: skewX(-10deg); border: 1px solid var(--line-color);
+        }
+        .disclaimer-text {
+            font-size: 9px; color: #888; line-height: 1.2; margin-bottom: 10px;
+            font-family: monospace; max-width: 80%;
+        }
+        .glitch-text { animation: glitch 3s infinite; }
+        .player-bar {
+            width: 100%; height: 46px; border: 2.5px solid var(--line-color); border-radius: 30px;
+            display: flex; align-items: center; padding: 0 15px; background: #fff;
+            box-shadow: 4px 4px 0 var(--line-color); justify-content: space-between;
+        }
+
+        /* 装饰音符 */
+        .deco-note { position: absolute; color: var(--accent-purple); z-index: 5; animation: float 3s infinite; }
+        .note-1 { top: 20%; left: 15%; font-size: 24px; }
+        .note-2 { bottom: 250px; right: 40px; font-size: 30px; color: var(--line-color); transform: rotate(15deg); }
+
+        @keyframes glitch { 0% { opacity: 1; } 95% { opacity: 1; } 96% { opacity: 0.5; transform: translateX(2px); } 97% { opacity: 1; transform: translateX(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        @keyframes float-rotate-reverse { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-4px) rotate(-5deg); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="big-typo-bg">
+        <span class="typo-outline">KANON</span>
+        <span style="color: #eaddf5">MAMIYA</span>
+    </div>
+
+    <div class="time-strip">
+        <span>♪ NOW PLAYING</span>
+        <span>IDOL_MODE.EXE</span>
+        <span>♪</span>
+    </div>
+
+    <div class="deco-note note-1">♪</div>
+    <div class="deco-note note-2">♫</div>
+
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <i class="fas fa-chevron-left"></i>
+        <div class="nav-title">TomorrowsGirlfriend</div>
+        <i class="fas fa-ellipsis-h"></i>
+    </div>
+
+    <!-- 核心立绘 -->
+    <div class="char-container">
+        <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E6%9C%88%E5%AE%AB%E7%BB%BE%E9%9F%B3.png" class="char-img">
+    </div>
+
+    <!-- 左下：状态面板 (核心数据) -->
+    <div class="status-wrapper">
+        <div class="pixel-ghost">👻</div>
+        <div class="status-panel">
+            <!-- 好感度 -->
+            <div class="stat-item">
+                <div class="stat-head"><span>好感度 (LOVE)</span> <span>0%</span></div>
+                <div class="progress-box"><div class="progress-fill love-fill"></div></div>
+            </div>
+            <!-- 信赖度 -->
+            <div class="stat-item">
+                <div class="stat-head"><span style="color:var(--accent-purple)">信赖度 (TRUST)</span> <span>0%</span></div>
+                <div class="progress-box"><div class="progress-fill trust-fill"></div></div>
+            </div>
+            <div class="icon-row">
+                <!-- 联系方式：False -->
+                <div class="icon-btn">
+                    <div class="icon-circle"><i class="fas fa-lock"></i></div>
+                    <span>未交换</span>
+                </div>
+                <!-- 恋爱状态：False -->
+                <div class="icon-btn">
+                    <div class="icon-circle"><i class="fas fa-heart-broken"></i></div>
+                    <span>单身</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 左上：关系阶段 -->
+    <div class="sticker stage-box">
+        <div class="stage-label">CURRENT STATUS</div>
+        <div class="stage-val">
+            <i class="fas fa-robot"></i> 礼貌客套期
+        </div>
+    </div>
+
+    <!-- 右上：开关 -->
+    <div class="sticker switch-box">
+        <div class="switch-row">
+            <div class="toggle"><div class="toggle-dot"></div></div>
+            <span>私生活 OFF</span>
+        </div>
+        <div class="switch-row">
+            <div class="toggle on"><div class="toggle-dot"></div></div>
+            <span>营业中 ON</span>
+        </div>
+    </div>
+
+    <!-- 右中：头像 -->
+    <div class="sticker avatar-card">
+        <div class="avatar-frame">
+            <!-- 更新头像 -->
+            <img src="https://gitgud.io/ESVigan/picture/-/raw/master/%E6%9E%97%E7%BB%9B.png" class="avatar-img">
+        </div>
+        <div class="avatar-tag"># NO DATA</div>
+    </div>
+
+    <!-- 右下：标签组 (包含CV、粉丝、真名) -->
+    <div class="tags-group">
+        <!-- CV进度 -->
+        <div class="tag-item tag-cv">
+            <i class="fas fa-microphone-alt"></i> CV学习: 基础阶段
+        </div>
+        <!-- 粉丝数 -->
+        <div class="tag-item tag-fans">
+            <i class="fas fa-users"></i> 粉丝数: 0
+        </div>
+        <!-- 真名 -->
+        <div class="tag-item tag-secret">REAL NAME: ???</div>
+    </div>
+
+    <!-- 底部区域 -->
+    <div class="bottom-area">
+        <div class="name-wrapper">
+            <div class="name-en">KANON</div>
+            <div class="name-cn-tag">月宫绾音</div>
+        </div>
+        
+        <div class="disclaimer-text glitch-text">
+            ERROR: Emotional module not found. Masking protocol active. Please insert coin to continue. // SYSTEM_ERROR
+        </div>
+
+        <div class="player-bar">
+            <i class="fas fa-play" style="font-size:18px; color:var(--accent-purple)"></i>
+            <div style="flex:1; height:2px; background:var(--line-color); margin:0 10px; opacity:0.2"></div>
+            <span style="font-size:12px; font-weight:900">VOICE_SAMPLE.WAV</span>
+        </div>
+    </div>
+
+</body>
+</html>

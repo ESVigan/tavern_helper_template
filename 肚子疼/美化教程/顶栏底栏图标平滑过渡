@@ -1,0 +1,29 @@
+/* A. 布局：让所有图标自动平均分配空间 */
+#top-settings-holder .drawer {
+    flex: 1;
+}/* 实现无论有没有记忆表格都平均分配空间的效果 */
+
+/* B. 图标的通用视觉样式 */
+#top-settings-holder .drawer-icon {
+    display: block;
+    margin: 0 auto;/* 这两行让图标在容器中水平居中 */
+    width: 32px !important;
+    height: 32px !important;/* 这两行强制图标的宽高为32像素，可自改 */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;/* 这三行确保贴图能完整、居中、不重复地显示在32x32的区域内 */
+    transition: all 0.3s ease-in-out;/* 这一行实现图标切换时的平滑过渡，all表示在top-settings-holder的drawer-icon中，所有可被动画化的属性都会应用这个效果；0.3s是过渡时间；ease-in-out是动画的速度曲线，可以让AI给你改 */
+    opacity: 0.85 !important;/* 这一行设置图标默认不透明度为85% */
+}
+
+/* 鼠标悬停时的效果 */
+#top-settings-holder .drawer-icon:hover {
+    transform: scale(1.15);/* 目标放大1.15倍，可自改 */
+    opacity: 1 !important;/* 目标完全不透明 */
+}
+
+/* 导航栏盒子展开时，图标变为激活状态的贴图（通用） */
+#top-settings-holder .drawer-icon:not(.closedIcon) {
+    background-image: url('你的贴图') !important;
+    opacity: 1 !important;/* 完全不透明 */
+    transform: scale(0.8);/* 缩小到0.8倍，产生被“按下”的感觉 */

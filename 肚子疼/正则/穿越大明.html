@@ -1,0 +1,400 @@
+<head>
+    <style>
+        /* 引入阿里普惠体 */
+        @import url("https://fontsapi.zeoseven.com/802/main/result.css");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            letter-spacing: -0.01em;
+        }
+
+        body {
+            font-family: 'Alibaba PuHui', 'AlibabaPuHui', sans-serif;
+            background: transparent;
+            padding: 10px;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.4;
+        }
+
+        /* 主容器 */
+        .status-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fffef9;
+            border: 1px solid #eee;
+            border-top: 2px solid #ac1f18; /* 红色顶边 */
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+
+        /* 顶部栏 */
+        .status-header {
+            background: #fffef9;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .header-title {
+            font-size: 1.25em;
+            font-weight: 800;
+            color: #ac1f18; /* 红色副色 */
+        }
+
+        .header-time {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .time-24h {
+            font-size: 0.8em;
+            color: #fca106; /* 黄色点缀 */
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* 消耗统计 */
+        .token-counter {
+            font-size: 11px;
+            padding: 1px 6px;
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            border-radius: 2px;
+            color: #999;
+        }
+        
+        .token-warning {
+            border-color: #fca106;
+            color: #ac1f18;
+            background: #fffef0;
+        }
+
+        .main-toggle {
+            font-size: 9px;
+            color: #ccc;
+            transition: 0.3s;
+        }
+
+        .main-toggle.expanded { transform: rotate(180deg); color: #ac1f18; }
+
+        /* 内容区 */
+        .status-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-content.expanded { max-height: 2000px; }
+
+        .content-inner { padding: 8px 14px 14px; }
+
+        /* 极简标签行 */
+        .tag-row {
+            display: flex;
+            gap: 12px;
+            margin: 4px 0 10px;
+        }
+
+        .tag-item {
+            display: flex;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .tag-label { color: #ac1f18; font-weight: 700; }
+        .tag-value { color: #333; }
+
+        /* 折叠板块 - 默认折叠样式 */
+        .section-box {
+            border-top: 1px solid #fafafa;
+        }
+
+        .section-header {
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 3px;
+            height: 3px;
+            background: #fca106;
+            border-radius: 50%;
+        }
+
+        .section-arrow {
+            font-size: 8px;
+            color: #ddd;
+            transition: 0.2s;
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        /* 展开状态由 JS 控制或类名控制 */
+        .section-content.open {
+            max-height: 800px;
+            padding-bottom: 10px;
+        }
+
+        .section-arrow.open {
+            transform: rotate(90deg);
+            color: #ac1f18;
+        }
+
+        /* 人物条目 - 高密度 */
+        .char-card {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+
+        .char-name {
+            font-weight: 800;
+            color: #ac1f18;
+        }
+
+        .char-meta {
+            font-size: 11px;
+            color: #777;
+            display: flex;
+            gap: 10px;
+        }
+
+        .meta-val { color: #333; }
+
+        /* 好感度 - 黄色 */
+        .favor-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        .favor-bar-bg {
+            width: 40px;
+            height: 3px;
+            background: #f0f0f0;
+            border-radius: 1px;
+            overflow: hidden;
+        }
+
+        .favor-bar-fill {
+            height: 100%;
+            background: #fca106;
+            transform-origin: left;
+            transition: 0.5s;
+        }
+
+        .favor-num {
+            font-size: 10px;
+            font-weight: 700;
+            color: #fca106;
+            min-width: 20px;
+        }
+
+        /* 提示与列表 */
+        .info-box {
+            background: #fff;
+            border-left: 2px solid #ac1f18;
+            padding: 6px 10px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .list-unit {
+            padding: 3px 8px;
+            margin-bottom: 3px;
+            background: #fffcf7;
+            border: 1px solid #f9f4ef;
+            font-size: 11px;
+            color: #777;
+        }
+
+        .none-tip { text-align: center; color: #ccc; padding: 15px; font-size: 11px; font-style: italic; }
+
+    </style>
+
+    <script type="module">
+        const 时辰映射 = {
+            '子时': '23:00-01:00', '丑时': '01:00-03:00', '寅时': '03:00-05:00',
+            '卯时': '05:00-07:00', '辰时': '07:00-09:00', '巳时': '09:00-11:00',
+            '午时': '11:00-13:00', '未时': '13:00-15:00', '申时': '15:00-17:00',
+            '酉时': '17:00-19:00', '戌时': '19:00-21:00', '亥时': '21:00-23:00'
+        };
+
+        function 创建角色条目(姓名, 数据) {
+            const 好感 = parseFloat(_.get(数据, '好感度', 0));
+            return `
+                <div class="char-card">
+                    <div class="char-name">${姓名}</div>
+                    <div class="char-meta">
+                        <span>关系 <span class="meta-val">${_.get(数据, '关系', '陌生')}</span></span>
+                        <span>位置 <span class="meta-val">${_.get(数据, '当前位置', '未知')}</span></span>
+                    </div>
+                    <div class="favor-wrap">
+                        <div class="favor-bar-bg"><div class="favor-bar-fill" style="transform: scaleX(${好感 / 100})"></div></div>
+                        <span class="favor-num">${好感}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function 渲染数据() {
+            try {
+                const 全局变量 = getAllVariables();
+                const 数据 = 全局变量.stat_data;
+                if (!数据) return;
+
+                const 时间 = 数据.时间 || {};
+                $('#title-text').text(`${时间.年号 || '隆庆'} (${时间.年份 || '1570'}年)`);
+                $('#time-text').text(`${时间.月份}月${时间.日期}日 ${时间.时辰}`);
+                $('#time-24h').text(时辰映射[时间.时辰] || '');
+
+                $('#val-loc').text(_.get(数据, '世界.当前地点', '-'));
+                $('#val-wea').text(_.get(数据, '世界.天气', '-'));
+
+                const 消耗 = _.get(全局变量, 'LAST_SEND_TOKENS', 0);
+                $('#token-val').text(消耗);
+                if (消耗 > 30000) $('#token-ui').addClass('token-warning');
+
+                $('#tip-content').text(_.get(数据, '系统.当前提示', '暂无指引'));
+
+                const 预警 = _.get(数据, '系统.历史预警', []);
+                $('#warning-content').html(预警.length ? 预警.map(w => `<div class="list-unit">${w}</div>`).join('') : '<div class="none-tip">暂无异常</div>');
+
+                const 角色榜单 = ['沈长风', '白灵', '白露', '朱翊宁', '苏清绾', '秦梦瑶', '蚩灵儿', '萧玉娆'];
+                const 角色HTML = 角色榜单
+                    .map(名 => {
+                        const 传 = _.get(数据, 名);
+                        return (传 && _.get(传, '已相识') !== false) ? 创建角色条目(名, 传) : '';
+                    }).join('');
+                $('#char-content').html(角色HTML || '<div class="none-tip">尚未结识</div>');
+
+            } catch (e) { console.error("数据加载失败", e); }
+        }
+
+        $(() => {
+            // 主开关
+            $('.status-header').on('click', function() {
+                $('.status-content').toggleClass('expanded');
+                $('.main-toggle').toggleClass('expanded');
+            });
+            
+            // 子板块开关
+            $('.status-container').on('click', '.section-header', function() {
+                $(this).next('.section-content').toggleClass('open');
+                $(this).find('.section-arrow').toggleClass('open');
+            });
+
+            渲染数据();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="status-container">
+        <!-- 头部核心信息 -->
+        <div class="status-header">
+            <div class="header-left">
+                <div class="header-title-group">
+                    <span class="header-title" id="title-text">载入中...</span>
+                    <span class="header-time" id="time-text">...</span>
+                    <span class="time-24h" id="time-24h"></span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="token-counter" id="token-ui">
+                    消耗 <span id="token-val">0</span>
+                </div>
+                <span class="main-toggle">▼</span>
+            </div>
+        </div>
+
+        <!-- 可折叠详细内容 -->
+        <div class="status-content">
+            <div class="content-inner">
+                <!-- 实时环境 -->
+                <div class="tag-row">
+                    <div class="tag-item">
+                        <span class="tag-label">地点</span>
+                        <span class="tag-value" id="val-loc">-</span>
+                    </div>
+                    <div class="tag-item">
+                        <span class="tag-label">天气</span>
+                        <span class="tag-value" id="val-wea">-</span>
+                    </div>
+                </div>
+
+                <!-- 系统板块 -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-title">系统指引</span>
+                        <span class="section-arrow">▶</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="info-box" id="tip-content">...</div>
+                    </div>
+                </div>
+
+                <!-- 角色板块 -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-title">人物关系</span>
+                        <span class="section-arrow">▶</span>
+                    </div>
+                    <div class="section-content">
+                        <div id="char-content"></div>
+                    </div>
+                </div>
+
+                <!-- 预警板块 -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-title">历史预警</span>
+                        <span class="section-arrow">▶</span>
+                    </div>
+                    <div class="section-content">
+                        <div id="warning-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
