@@ -1,0 +1,90 @@
+/* 移动端状态栏留空问题修复 */
+
+/* 1. 使用更精确的视口单位 */
+@media (max-width: 600px) {
+    /* 重置body的padding */
+    html, body {
+        padding: 0;
+        height: 100vh; /* 使用vh单位替代百分比 */
+        height: -webkit-fill-available; /* 针对iOS Safari */
+        overflow: hidden; /* 防止滚动 */
+    }
+    
+    /* 2. 修复主容器布局 */
+    .main-container {
+        height: 100vh;
+        height: -webkit-fill-available;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* 3. 调整内容区域 */
+    .tab-content {
+        position: relative; /* 改为相对定位 */
+        flex: 1; /* 使用flex布局 */
+        padding-bottom: 0; /* 移除底部内边距 */
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    /* 4. 修复底部导航栏 */
+    .dock-nav {
+        position: relative; /* 改为相对定位 */
+        bottom: auto;
+        left: auto;
+        transform: none;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        border-bottom: none;
+        border-left: none;
+        border-right: none;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.4); /* 上方阴影 */
+    }
+    
+    /* 5. 修复状态栏的绝对定位问题 */
+    .status-strip {
+        position: relative; /* 改为相对定位避免溢出 */
+        height: auto;
+        min-height: 18.5px;
+        padding: 2px 10px;
+    }
+    
+    /* 6. 修复卡片布局 */
+    .archive-card {
+        margin-bottom: 10px; /* 确保底部有间距 */
+    }
+    
+    /* 7. 针对SillyTavern内嵌的特殊处理 */
+    .sillytavern-embedded & {
+        .dock-nav {
+            position: sticky; /* 使用sticky定位 */
+            bottom: 0;
+            z-index: 1000;
+        }
+    }
+}
+
+/* 8. 桌面端保持原有样式 */
+@media (min-width: 601px) {
+    .dock-nav {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85%;
+    }
+    
+    .tab-content {
+        padding-bottom: 60px;
+    }
+}
+
+/* 9. 针对现代移动浏览器的优化 */
+@supports (padding: max(0px)) {
+    @media (max-width: 600px) {
+        .dock-nav {
+            padding-bottom: max(0px, env(safe-area-inset-bottom));
+        }
+    }
+}
