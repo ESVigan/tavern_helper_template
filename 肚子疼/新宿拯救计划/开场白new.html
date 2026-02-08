@@ -1,3 +1,4 @@
+```
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -28,7 +29,7 @@
             font-family: 'Noto Sans SC', sans-serif;
             background: transparent;
             display: flex; justify-content: center; align-items: center;
-            overflow: auto; /* Allow scrolling on small screens */
+            overflow: auto;
         }
 
         /* === iOS Style Alerts & Toasts === */
@@ -74,8 +75,11 @@
 
     /* === Phone Frame === */
         .phone-container {
-            width: clamp(320px, 90vw, 400px);
-            height: clamp(650px, 90vh, 850px);
+            width: min(400px, 90vw);
+            height: min(850px, 90vh);
+            min-width: 320px;
+            min-height: 600px;
+            margin: auto;
             background: #000;
             border-radius: 55px;
             position: relative;
@@ -93,53 +97,8 @@
         }
 
         @media (max-width: 768px) {
-            /* 保持手机外框样式，仅调整内部布局以适应小屏 */
             .phone-container {
-                /* 确保在小屏上留出阴影空间 */
-                width: min(400px, 90vw);
-                height: min(850px, 90vh);
-
-                /* 防止在极小容器（如嵌入式iframe）中变得过小 */
-                min-width: 320px;
-                min-height: 600px;
-                /* 恢复默认的边框和阴影 (继承自上方定义) */
-            }
-
-            /* Safe Area Adaptations - 即使在虚拟框内，适当增加点击区域也是好的 */
-            .status-bar {
-                padding-top: 10px;
-            }
-
-            .app-header {
-                padding-top: 45px;
-            }
-
-            .app-grid {
-                padding-top: 70px;
-                /* Adjust for small screens */
-                padding-left: 10px;
-                padding-right: 10px;
-                column-gap: 10px;
-            }
-
-            .dock {
-                margin-bottom: 25px;
-            }
-
-            .swipe-hint {
-                padding-bottom: 10px;
-            }
-
-            .lock-actions {
-                margin-bottom: 40px;
-            }
-
-            .tg-book-bar {
-                padding-bottom: 15px;
-            }
-
-            .tg-nav {
-                padding-bottom: 25px;
+                /* Keep frame style on mobile */
             }
         }
 
@@ -287,7 +246,7 @@
             border-bottom: 1px solid #eee; background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px); flex-shrink: 0; z-index: 10;
         }
-        .app-back { font-size: 20px; color: #007aff; cursor: pointer; width: 40px; display: flex; align-items: center; }
+        .app-back { font-size: 20px; color: #007aff; cursor: pointer; width: 60px; height: 100%; display: flex; align-items: center; padding-right: 20px; }
         .app-title { flex: 1; text-align: center; font-weight: bold; font-size: 16px; color: #000; }
         .app-action { width: 40px; text-align: right; }
 
@@ -299,6 +258,51 @@
         }
         .app-content::-webkit-scrollbar {
             display: none; width: 0; height: 0;
+        }
+
+        /* Booking Modal */
+        .booking-modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 200; display: none;
+            justify-content: center; align-items: flex-end;
+        }
+        .booking-modal {
+            width: 100%; background: #fff; border-top-left-radius: 20px; border-top-right-radius: 20px;
+            padding: 25px; animation: slideUp 0.3s; color: #000;
+        }
+        .bk-title { font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center; color: #000; }
+        .bk-row { margin-bottom: 15px; }
+        .bk-label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .bk-value { font-size: 16px; font-weight: bold; padding: 10px; background: #f5f5f5; border-radius: 8px; color: #000; }
+        .bk-btn {
+            background: #ff4757; color: #fff; border: none; padding: 15px; width: 100%;
+            border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px;
+        }
+
+        /* Payment Animation */
+        .pay-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 300; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .pay-spinner {
+            width: 40px; height: 40px; border: 4px solid #eee; border-top: 4px solid #ff4757;
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        .pay-check {
+            font-size: 60px; color: #06c755; transform: scale(0);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .pay-text { font-size: 18px; font-weight: bold; margin-top: 20px; color: #333; opacity: 0; transition: opacity 0.5s; }
+
+        /* Forum Reply */
+        .forum-reply-bar {
+            padding: 10px 15px; border-top: 1px solid #ddd; background: #fff;
+            display: flex; gap: 10px; align-items: center;
+        }
+        .forum-reply-btn {
+            flex: 1; background: #3b5998; color: #fff; border: none; padding: 8px;
+            border-radius: 4px; font-size: 14px;
         }
 
         /* === Safari === */
@@ -365,9 +369,9 @@
         .tg-detail-hero { position: relative; height: 350px; }
         .tg-detail-img { width: 100%; height: 100%; object-fit: cover; }
         .tg-hero-back {
-            position: absolute; top: 20px; left: 20px; z-index: 10;
+            position: absolute; top: 50px; left: 20px; z-index: 20;
             color: #fff; font-size: 24px; text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            cursor: pointer;
+            cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
         }
         .tg-hero-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%;
@@ -457,28 +461,56 @@
 
         /* Message Detail (Chat) */
         .msg-detail-view {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #7c98b0; /* LINE Chat BG */
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #92a4b7; /* Classic LINE BG Color */
             z-index: 80; display: none; flex-direction: column;
             animation: slideInRight 0.3s;
         }
-        .chat-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.4; position: relative; }
-        .chat-bubble.receive { background: #fff; color: #000; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .chat-bubble.sent { background: var(--line-green); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-area { flex: 1; padding: 20px 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+
+        .chat-row { display: flex; align-items: flex-start; gap: 8px; max-width: 100%; }
+        .chat-row.receive { flex-direction: row; }
+        .chat-row.sent { flex-direction: row-reverse; }
+
+        .chat-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            object-fit: cover; flex-shrink: 0;
+            background: #fff;
+        }
+
+        .chat-content { display: flex; flex-direction: column; max-width: 70%; }
+
+        .chat-name {
+            font-size: 11px; color: #444; margin-bottom: 2px;
+            padding-left: 2px;
+        }
+        .chat-row.sent .chat-name { display: none; } /* Hide name for sender */
+
+        .chat-bubble {
+            padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative;
+            word-wrap: break-word;
+        }
+        .chat-bubble.receive {
+            background: #fff; color: #000; border-top-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .chat-bubble.sent {
+            background: #85e249; color: #000; border-top-right-radius: 4px; /* LINE Green */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
 
         .chat-bubble.receive::before {
-            content: ''; position: absolute; left: -8px; bottom: 0;
+            content: ''; position: absolute; left: -6px; top: 0;
             width: 0; height: 0;
-            border-left: 10px solid transparent; border-right: 10px solid transparent;
-            border-bottom: 10px solid #fff;
-            transform: rotate(-45deg);
+            border-left: 6px solid transparent; border-right: 6px solid transparent;
+            border-top: 10px solid #fff;
+            transform: rotate(0deg); /* Adjust triangle */
         }
         .chat-bubble.sent::before {
-            content: ''; position: absolute; right: -8px; bottom: 0;
+            content: ''; position: absolute; right: -6px; top: 0;
             width: 0; height: 0;
-            border-left: 10px solid transparent; border-right: 10px solid transparent;
-            border-bottom: 10px solid var(--line-green);
-            transform: rotate(45deg);
+            border-left: 6px solid transparent; border-right: 6px solid transparent;
+            border-top: 10px solid #85e249;
+            transform: rotate(0deg);
         }
 
         .btn-confirm-start {
@@ -491,11 +523,67 @@
         #app-x .app-header { background: #000; border-bottom: 1px solid #333; }
         #app-x .app-title { color: #fff; }
         #app-x .app-content { background: #000; }
-        .tweet { padding: 15px; border-bottom: 1px solid #333; display: flex; gap: 10px; }
+        .tweet { padding: 15px; border-bottom: 1px solid #333; display: flex; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .tweet:active { background: #111; }
         .t-user { font-weight: bold; font-size: 14px; color: #fff; }
         .t-handle { color: #666; font-size: 13px; margin-left: 5px; }
         .t-text { font-size: 14px; line-height: 1.4; color: #eee; margin-bottom: 8px; margin-top: 4px; }
         .private-badge { background: #2f3336; color: #1d9bf0; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: auto; border: 1px solid #1d9bf0; }
+
+        /* X Detail View */
+        .x-detail-view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000;
+            z-index: 80; display: none; flex-direction: column;
+            animation: slideInRight 0.3s;
+        }
+        .x-d-content { padding: 20px; border-bottom: 1px solid #333; }
+        .x-d-user-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+        .x-d-avatar { width: 50px; height: 50px; border-radius: 50%; }
+        .x-d-names { display: flex; flex-direction: column; }
+        .x-d-text { font-size: 18px; line-height: 1.4; margin-bottom: 15px; }
+        .x-d-meta { color: #666; font-size: 13px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #333; }
+        .x-d-stats { display: flex; gap: 20px; color: #666; font-size: 13px; padding-bottom: 15px; border-bottom: 1px solid #333; margin-bottom: 15px; }
+        .x-d-stat-val { color: #fff; font-weight: bold; margin-right: 3px; }
+
+        .x-reply-area { padding: 15px; border-top: 1px solid #333; position: sticky; bottom: 0; background: #000; display: flex; align-items: center; gap: 10px; }
+        .x-reply-input {
+            flex: 1; background: #202327; border: none; border-radius: 20px;
+            padding: 10px 15px; color: #fff; font-size: 14px; cursor: text;
+        }
+        .x-reply-btn-send { color: #1d9bf0; font-weight: bold; font-size: 14px; opacity: 0.5; cursor: default; }
+        .x-reply-btn-send.active { opacity: 1; cursor: pointer; }
+
+        /* Reply Selection Modal */
+        .reply-modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 100; display: none;
+            justify-content: center; align-items: flex-end;
+        }
+        .reply-modal {
+            width: 100%; background: #000; border-top-left-radius: 20px; border-top-right-radius: 20px;
+            padding: 20px; padding-bottom: 40px; border-top: 1px solid #333;
+            animation: slideUp 0.3s;
+        }
+        .reply-option {
+            padding: 15px; border-bottom: 1px solid #333; color: #fff; font-size: 14px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .reply-option:active { background: #111; }
+        .reply-option:last-child { border-bottom: none; }
+        .reply-header { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #fff; text-align: center; }
+
+        .x-comment-item { display: flex; gap: 10px; padding: 15px 0; border-bottom: 1px solid #333; }
+        .x-c-avatar { width: 40px; height: 40px; border-radius: 50%; }
+        .x-c-content { flex: 1; }
+        .x-c-header { display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .x-c-name { font-weight: bold; font-size: 14px; color: #fff; }
+        .x-c-handle { color: #666; font-size: 13px; margin-left: 5px; }
+        .x-c-text { font-size: 14px; color: #eee; line-height: 1.4; }
+        .x-c-actions { display: flex; gap: 20px; color: #666; font-size: 12px; margin-top: 5px; }
+
+        /* Message Sending Animation */
+        @keyframes msgSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .new-comment { animation: msgSlideIn 0.3s ease-out; background: rgba(29, 155, 240, 0.1); }
 
         /* Notifications */
         .notification-overlay {
@@ -544,6 +632,11 @@
 
     <!-- === Home Screen === -->
     <div id="home-screen" class="screen">
+        <div id="pay-overlay" class="pay-overlay">
+            <div id="pay-spinner" class="pay-spinner"></div>
+            <div id="pay-check" class="pay-check"><i class="fas fa-check-circle"></i></div>
+            <div id="pay-text" class="pay-text">支付成功</div>
+        </div>
         <div class="app-grid">
             <!-- TG Icon (Initially Hidden) -->
             <div class="app-icon" id="icon-tg" onclick="handleTgClick()" style="display:none">
@@ -745,6 +838,26 @@
                 <button id="tg-btn-book" class="tg-btn-book" onclick="bookCharacter()">立即预约</button>
             </div>
         </div>
+
+        <!-- Booking Modal -->
+        <div id="booking-modal-overlay" class="booking-modal-overlay" onclick="closeBookingModal(event)">
+            <div class="booking-modal" onclick="event.stopPropagation()">
+                <div class="bk-title">预约确认</div>
+                <div class="bk-row">
+                    <div class="bk-label">预约对象</div>
+                    <div class="bk-value" id="bk-name">Name</div>
+                </div>
+                <div class="bk-row">
+                    <div class="bk-label">时间</div>
+                    <div class="bk-value" id="bk-time">--</div>
+                </div>
+                <div class="bk-row">
+                    <div class="bk-label">地点</div>
+                    <div class="bk-value" id="bk-loc">--</div>
+                </div>
+                <button class="bk-btn" onclick="confirmBooking()">确认支付并预约</button>
+            </div>
+        </div>
     </div>
 
     <!-- === Messages App (LINE) === -->
@@ -795,6 +908,11 @@
             <div class="fd-content" id="fd-content">
                 <!-- Content -->
             </div>
+            <div class="forum-reply-bar" id="forum-reply-bar" style="display:none">
+                <div style="width:30px;height:30px;background:#ddd;border-radius:50%"></div>
+                <input type="text" placeholder="添加评论..." style="flex:1;border:none;background:#f0f2f5;padding:8px;border-radius:20px;font-size:14px" readonly onclick="handleForumReplyClick()">
+                <i class="fas fa-paper-plane" style="color:#3b5998"></i>
+            </div>
         </div>
     </div>
 
@@ -807,6 +925,41 @@
         </div>
         <div class="app-content" id="x-content">
             <!-- Tweets -->
+        </div>
+
+        <!-- X Detail View -->
+        <div id="x-detail-view" class="x-detail-view">
+            <div class="app-header">
+                <div class="app-back" onclick="closeXDetail()"><i class="fas fa-arrow-left"></i></div>
+                <div class="app-title">帖子</div>
+                <div class="app-action"></div>
+            </div>
+            <div style="flex:1; overflow-y:auto">
+                <div id="x-d-container" class="x-d-content">
+                    <!-- Injected via JS -->
+                </div>
+                <!-- Comments List -->
+                <div id="x-comments-list" style="padding: 0 20px;"></div>
+            </div>
+
+            <div class="x-reply-area" id="x-reply-area">
+                <div style="width:30px;height:30px;background:#007aff;border-radius:50%;overflow:hidden">
+                     <img src="https://ui-avatars.com/api/?name=Me&background=007aff&color=fff" style="width:100%">
+                </div>
+                <div class="x-reply-input" onclick="openReplyModal()">发布你的回复</div>
+                <div class="x-reply-btn-send">回复</div>
+            </div>
+        </div>
+
+        <!-- Reply Modal -->
+        <div id="reply-modal-overlay" class="reply-modal-overlay" onclick="closeReplyModal(event)">
+            <div class="reply-modal" onclick="event.stopPropagation()">
+                <div class="reply-header">选择回复内容</div>
+                <div id="reply-options-list">
+                    <!-- Options injected via JS -->
+                </div>
+                <div class="reply-option" style="text-align:center;color:#ff4757;margin-top:10px;border:none" onclick="closeReplyModal(null)">取消</div>
+            </div>
         </div>
     </div>
 
@@ -877,6 +1030,22 @@
     }
 
     const forumData = [
+        {
+            title: "【都市传说】新宿街头偶遇了两个超级美少女！",
+            meta: "路人观察者 • 刚刚",
+            body: "就在刚才！在东口附近！看到了两个气质完全不同的极品美少女走在一起！\n一个是黑长直JK，一个是看起来很温柔的大姐姐。\n她们好像在争论什么，我隐约听到了“租借”什么的...\n有没有人也看到的？",
+            trigger: 'opening1',
+            replies: [
+                { text: "我也在附近！过去看看吧。", action: 'opening1' },
+                { text: "无图无真相，楼主在编故事吧。", action: null }
+            ],
+            comments: [
+                {id:1, user: "无名氏", text: "我也看到了！颜值真的逆天！"},
+                {id:2, user: "无名氏", text: "租借？难道是TG的那两个头牌？"},
+                {id:3, user: "楼主", text: "真的不是我眼花！那种级别的绝对不是普通人！"},
+                {id:4, user: "无名氏", text: "又是TG的广告贴吧？散了散了。"}
+            ]
+        },
         {
             title: "【求助】我好像有点不对劲，被拉黑了...",
             meta: "恋爱脑 • 刚刚",
@@ -1013,89 +1182,273 @@
         {
             user: "新宿观测者", handle: "@shinjuku_eye",
             text: "现在的租借女友质量也太高了吧？刚才在街上看到两个超级可爱的女孩子，感觉像是TG平台的头牌... #新宿 #偶遇",
-            time: "10分钟前"
+            time: "10分钟前",
+            comments: [
+                { user: "路人A", handle: "@passerby_a", text: "我也看到了！真的超绝可爱！" },
+                { user: "酸柠檬", handle: "@lemon_sour", text: "又是广告吧？最近这种营销号真多。" }
+            ]
         },
         {
             user: "天气预报Bot", handle: "@weather_jp",
             text: "【暴雨警报】今晚新宿地区将有特大暴雨，请不得不出门的各位带好雨具。☔️",
-            time: "1小时前"
+            time: "1小时前",
+            trigger: 'opening5',
+            comments: [
+                { user: "社畜", handle: "@company_slave", text: "饶了我吧，刚下班没带伞..." },
+                { user: "家中蹲", handle: "@neet_king", text: "幸好今天没出门，赢麻了。" }
+            ],
+            replies: [
+                { text: "这雨下得真大...不想出门了。", action: null },
+                { text: "这种天气还在外面跑的人真辛苦啊。", action: 'opening5' }
+            ]
         },
         {
             user: "地震速报", handle: "@earthquake_alert",
             text: "【震感速报】刚才发生的3级地震，震源深度10km。虽然不大，但如果你正在和陌生人合租，说不定是个拉近关系的好机会？(笑)",
-            time: "3小时前"
-        },
-        {
-            user: "社畜君", handle: "@work_hard_play_hard",
-            text: "下周就要同学聚会了，还是单身狗一只。是不是该去租个女朋友撑撑场面？TG那个“月宫绾音”好像很不错的样子...",
-            time: "5小时前"
+            time: "3小时前",
+            trigger: 'opening4',
+            comments: [
+                { user: "惊魂未定", handle: "@scared_cat", text: "刚才真的晃了一下，家里的猫都炸毛了。" },
+                { user: "理科生", handle: "@physics_boy", text: "震源深度10km的话，体感确实会比较明显。" }
+            ],
+            replies: [
+                { text: "刚才真的晃得很厉害！吓死我了。", action: 'opening4' },
+                { text: "这种程度的地震完全没感觉嘛。", action: null }
+            ]
         },
         {
             user: "E_No.1", handle: "@black_cat_bite", private: true,
             text: "烦死了烦死了。那个秃顶大叔的手一直在抖，还要装作很享受的样子。这种日子到底还要过多久啊……💢",
-            time: "刚刚"
+            time: "刚刚",
+            comments: []
         },
         {
             user: "Moon_Shadow", handle: "@ayane_secret", private: true,
             text: "今天的客人很温柔呢。但是……为什么看着他的眼睛时，心里会觉得空落落的？😢",
-            time: "10分钟前"
+            time: "10分钟前",
+            comments: []
         }
     ];
 
-    const openings = [
-        {
-            swipeId: 1,
-            sender: "未知号码",
-            title: "开局一：偶遇",
-            preview: "街角的风景",
-            text: "阳光明媚的新宿街头，两个风格迥异的美少女并肩走来。这不仅仅是一次擦肩而过，更是命运的红线缠绕的开始。\n\n你在街上遇到了正在逛街的月宫绾音和如月绘里奈……",
-            pinned: true
-        },
-        {
-            swipeId: 2,
-            sender: "TG平台",
-            title: "开局二：初次租借",
-            preview: "你第一次使用app租借月宫绾音",
-            text: "手指在屏幕上轻轻一点，名为“恋爱”的商品即刻送达。月宫绾音，那个有着初恋脸庞的女孩，正等待着你的订单确认。\n\n你第一次使用app租借月宫绾音。",
-            pinned: false
-        },
-        {
-            swipeId: 3,
-            sender: "未知号码",
-            title: "开局三：邂逅",
-            preview: "歌舞伎町之夜",
-            text: "霓虹灯光怪陆离，她在喧嚣中回眸。那像猫一样带有侵略性的眼神，瞬间击中了你。这不是租借，是真正的猎捕。\n\n你在歌舞伎町邂逅了如月绘里奈。",
-            pinned: false
-        },
-        {
-            swipeId: 4,
-            sender: "房东",
-            title: "开局四：合租",
-            preview: "地震的红利",
-            text: "一场突如其来的地震震坏了她的公寓。现在，这位Top 10的租借女友，即将带着她的行李和秘密，住进你的生活。\n\n因为地震，月宫绾音被迫被房东安排和你合租。"
-        },
-        {
-            swipeId: 5,
-            sender: "天气预报",
-            title: "开局五：捡拾",
-            preview: "暴雨夜的猫",
-            text: "大雨倾盆，那个平时高傲的Top 1此刻却像只淋湿的小猫缩在屋檐下。你无法置之不理，而她，正等着那个带她回家的人。\n\n暴雨夜，你捡到无家可归的如月绘里奈。"
-        },
-        {
-            swipeId: 6,
-            sender: "班长",
-            title: "开局六：聚会",
-            preview: "虚荣与救赎",
-            text: "为了面子，你租下了她。在推杯换盏间，她完美地扮演着你的理想女友。但当聚会散场，面具下的真心又该何去何从？\n\n你带着租借的月宫绾音参加同学聚会……"
-        }
-    ];
+    // Openings array removed as requested
+    const openings = [];
 
     // ================== LOGIC ==================
     let booked = { erina: false, ayane: false };
     let currentTgChar = null;
     let isInstalling = false;
     let hasBookedOnce = false;
+    let isAppInstalled = false; // Track if app is installed
     let activeMessages = []; // Manage displayed messages
+    let bookingContext = null; // 'reunion' or null
+
+    // ================= NEW STORY LOGIC =================
+    const storyScripts = {
+        // 开场一：偶遇 (对应 openings index 0)
+        opening1: {
+            id: 'story-1',
+            sender: "路人观察者",
+            avatar: "https://ui-avatars.com/api/?name=Observer&background=34495e&color=fff",
+            time: "刚刚",
+            preview: "真的！就在东口！",
+            chat: [
+                { type: "receive", text: "我也在东口这边，好像确实看到了！" },
+                { type: "receive", text: "那两个女生好像往歌舞伎町方向走了。" },
+                { type: "receive", text: "那个黑长直的JK看起来好凶啊，但是好漂亮！" },
+                { type: "receive", text: "另一个感觉超温柔的..." },
+                { type: "sent", text: "我去看看。" },
+                { type: "receive", text: "楼主小心点，那边最近不太平。" }
+            ],
+            actionBtn: "前往查看", // 衔接正文
+            targetSwipeId: 0 // 对应 openings[0]
+        },
+
+        // 开场四：房东 (对应 openings index 3)
+        opening4: {
+            id: 'story-4',
+            sender: "中介大叔",
+            avatar: "https://ui-avatars.com/api/?name=中介&background=7f8c8d&color=fff",
+            time: "刚刚",
+            preview: "[图片] 哎呀，这下麻烦了...",
+            chat: [
+                { type: "system", text: "【地震速报】新宿区发生震度4级地震，震源深度60公里。" },
+                { type: "receive", text: "刚才地震没事吧？" },
+                { type: "receive", text: "哎呀，那个新来的租客那边出事了。她住的那栋昭和老楼墙体裂了，刚才被警察封锁了...😰" },
+                { type: "receive", text: "现在到处都满了，我看你那是个两居室，平时也空着..." },
+                { type: "receive", text: "能不能让她在你那暂住几天？大家都是邻居，互帮互助嘛。房租我给你打八折！" },
+                { type: "receive", text: "她叫林绛，是个挺乖的孩子，行李都收拾好了。" },
+                { type: "receive", text: "我让她直接去你门口了啊！拜托了！🙏" }
+            ],
+            actionBtn: "打开门", // 衔接正文：站在玄关吃饭团
+            targetSwipeId: 3 // 对应 openings[3] -> swipeId 3
+        },
+
+        // 开场五：天气 (对应 openings index 4)
+        opening5: {
+            id: 'story-5',
+            sender: "死党",
+            avatar: "https://ui-avatars.com/api/?name=Friend&background=f1c40f&color=fff",
+            time: "刚刚",
+            preview: "卧槽？她朝你走过来了！祝你好运...",
+            chat: [
+                { type: "receive", text: "下这么大雨，你还在外面浪？赶紧回家打游戏啊！🎮" },
+                { type: "sent", text: "刚出便利店。诶，公交站那有个女生。" },
+                { type: "sent", text: "全身都湿透了，缩在长椅上，看着怪可怜的...脸上好像还有伤。" },
+                { type: "receive", text: "哈？这么晚了？不会是那种...幽灵吧？👻 别是碰瓷的啊，新宿这种怪人多的是。" },
+                { type: "sent", text: "不像...她一直在发抖。像只被遗弃的小猫。" },
+                { type: "receive", text: "喂喂，你该不会想去搭讪吧？别多管闲事啊。" },
+                { type: "sent", text: "等等，她好像看到我了。" },
+                { type: "sent", text: "她站起来了。" },
+                { type: "receive", text: "卧槽？" },
+                { type: "receive", text: "她朝你走过来了！！快跑啊兄弟！🏃‍♂️💨" }
+            ],
+            actionBtn: "听听她说什么", // 衔接正文：她开口问能不能去你家
+            targetSwipeId: 4 // 对应 openings[4] -> swipeId 4
+        },
+
+        // 开场六：班长/社团群 (对应 openings index 5)
+        opening6: {
+            id: 'story-6',
+            sender: "大学社团闲聊群",
+            avatar: "https://ui-avatars.com/api/?name=社团&background=9b59b6&color=fff",
+            time: "10分钟前",
+            preview: "佐藤：@南玺 你小子今天不会又鸽吧？",
+            chat: [
+                { type: "receive", sender: "班长", text: "@所有人 今晚的聚会地点定在歌舞伎町的「Platinum」KTV！🎤" },
+                { type: "receive", sender: "班长", text: "再次提醒，佐藤君这次可是请了客的，大家尽量带家属来捧场啊！" },
+                { type: "receive", sender: "佐藤", text: "@南玺 喂，你小子今天不会又是孤家寡人一个吧？" },
+                { type: "receive", sender: "佐藤", text: "听说你最近还在加班？真惨啊。今天哥哥我可是带了“惊喜”来的，让你开开眼界 😏" },
+                { type: "system", text: "（佐藤那家伙...肯定又要炫耀他的新女友了）" },
+                { type: "system", text: "（这次绝不能输。试试刚下载的那个APP吧，指名个最贵的...）" }
+            ],
+            actionBtn: "前往TG预约", // 衔接正文：带着绾音走进KTV
+            targetSwipeId: 5, // 对应 openings[5] -> swipeId 5
+            customAction: "startReunionBooking()"
+        }
+    };
+
+    function onAppInstalled() {
+        if (isAppInstalled) return; // Prevent double install logic
+        isAppInstalled = true;
+
+        // Update Safari UI immediately
+        updateSafariState();
+
+        // Update Line view immediately to remove the Ad if needed, or just prepare for notifications
+        renderMessages();
+
+        // Simulate Notifications Bombardment
+        setTimeout(() => {
+            // triggerStoryNotifications(); // Removed earthquake trigger
+            injectStoryMessages();
+            // Badge will be updated by events
+
+            // Show notification for the group chat
+            showNotification("大学社团闲聊群", "佐藤：@南玺 你小子今天不会又鸽吧？", "https://ui-avatars.com/api/?name=社团&background=9b59b6&color=fff", () => openApp('messages'));
+        }, 1500);
+    }
+
+    function triggerStoryNotifications() {
+        setTimeout(() => showNotification("系统", "地震速报：新宿区发生4级地震", "https://via.placeholder.com/50/e74c3c/fff?text=!", null), 500);
+    }
+
+    function injectStoryMessages() {
+        // Inject Class Reunion Group Chat (LINE)
+        const reunionScript = storyScripts['opening6'];
+        if (reunionScript) {
+            addStoryMessage(reunionScript);
+        }
+    }
+
+    function addStoryMessage(script) {
+        const msg = {
+            sender: script.sender,
+            avatar: script.avatar,
+            time: script.time,
+            text: script.preview,
+            isStory: true,
+            scriptId: script.id,
+            scriptData: script,
+            swipeId: script.targetSwipeId
+        };
+        // Remove existing identical story messages
+        activeMessages = activeMessages.filter(m => m.scriptId !== script.id);
+        activeMessages.unshift(msg);
+        renderMessages();
+    }
+
+    function openStoryChat(scriptKeyOrObj) {
+        let script;
+        if (typeof scriptKeyOrObj === 'string') {
+            script = storyScripts[scriptKeyOrObj];
+        } else {
+            script = scriptKeyOrObj;
+        }
+
+        $('#chat-title').text(script.sender);
+        const $container = $('#chat-container');
+        $container.empty();
+
+        $('#msg-detail-view').css('display', 'flex');
+
+        let delay = 0;
+        script.chat.forEach((msg) => {
+            delay += 800;
+            setTimeout(() => {
+                let html = '';
+                // Replace 南玺 with "你" or keep it if username logic exists. Default to "你" for now.
+                const text = msg.text.replace(/南玺/g, "你");
+
+                if (msg.type === 'system') {
+                    html = `<div style="text-align:center; font-size:12px; color:#555; margin:10px 0; background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:10px; display:inline-block; align-self:center;">${text}</div>`;
+                } else {
+                    const isReceive = msg.type === 'receive';
+                    // Determine Avatar: Use msg.sender specific avatar if available (for group chats), else script default
+                    let avatar = "https://ui-avatars.com/api/?name=Me&background=007aff&color=fff";
+                    if (isReceive) {
+                        if (msg.sender) {
+                             // Consistent random color based on name length or similar simple hash could be better, but random is fine for now
+                             avatar = `https://ui-avatars.com/api/?name=${msg.sender}&background=random&color=fff`;
+                        } else {
+                             avatar = script.avatar;
+                        }
+                    }
+
+                    const name = isReceive ? (msg.sender || script.sender) : "";
+
+                    html = `
+                    <div class="chat-row ${isReceive ? 'receive' : 'sent'}">
+                        ${isReceive ? `<img src="${avatar}" class="chat-avatar">` : ''}
+                        <div class="chat-content">
+                            ${isReceive ? `<div class="chat-name">${name}</div>` : ''}
+                            <div class="chat-bubble ${isReceive ? 'receive' : 'sent'}">${text}</div>
+                        </div>
+                    </div>`;
+                }
+
+                $container.append(html);
+                $container.scrollTop($container[0].scrollHeight);
+            }, delay);
+        });
+
+        setTimeout(() => {
+            let actionAttr = `onclick="selectOpening(${script.targetSwipeId})"`;
+            if(script.customAction) {
+                actionAttr = `onclick="${script.customAction}"`;
+            }
+            const btnHtml = `<div style="text-align:center; margin-top:20px; width:100%;"><button class="btn-confirm-start" ${actionAttr}>${script.actionBtn}</button></div>`;
+            $container.append(btnHtml);
+            $container.scrollTop($container[0].scrollHeight);
+        }, delay + 800);
+    }
+
+    function startReunionBooking() {
+        bookingContext = 'reunion';
+        closeMsgDetail();
+        openApp('tg');
+        openTgDetail('ayane');
+        showIOSToast("为了聚会，赶紧预约她吧！");
+    }
 
     // Clock
     function updateClock() {
@@ -1121,10 +1474,38 @@
             audio.volume = 0.5;
             audio.play().catch(e => console.log("Audio play failed (user interaction required):", e));
         }
+
+        // Phase 1: Ad Notification (If APP not installed)
+        if (!isAppInstalled && !isInstalling) {
+            setTimeout(() => {
+                showNotification(
+                    "TG平台",
+                    "还在忍受孤独？首单半价，租借你的专属恋人。点击下载 >>",
+                    "https://i.postimg.cc/Njm9yRxk/unnamed-(3).png",
+                    null,
+                    'safari'
+                );
+            }, 1000);
+        }
     }
 
     function openApp(id) {
-        document.getElementById(`app-${id}`).style.display = 'flex';
+        // Hide overlay views if opening a main app
+        if (['safari', 'tg', 'messages', 'forum', 'x'].includes(id)) {
+            closeMsgDetail();
+            closeTgDetail();
+            closeForumDetail();
+        }
+
+        // Z-Index Management: Bring opened app to front
+        $('.app-screen').css('z-index', 60); // Reset base z-index
+        const app = document.getElementById(`app-${id}`);
+        app.style.display = 'flex';
+        app.style.zIndex = 70; // Bring to front
+
+        if (id === 'safari') {
+            updateSafariState();
+        }
     }
 
     function closeApp() {
@@ -1132,7 +1513,29 @@
     }
 
     // Safari Logic
+    function updateSafariState() {
+        if (isAppInstalled) {
+            $('.web-landing').html(`
+                <div style="font-family:'Oswald'; font-size:32px; margin-bottom:10px;">Tomorrow's Girlfriend</div>
+                <div style="font-size:14px; margin-bottom:20px;">“在这个孤独的城市，租借一个梦。”</div>
+                <div onclick="openApp('tg')" style="background:#00c755; color:#fff; padding:12px 30px; border-radius:25px; display:inline-block; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                    已安装 - 点击打开
+                </div>
+            `);
+        } else {
+            $('.web-landing').html(`
+                <div style="font-family:'Oswald'; font-size:32px; margin-bottom:10px;">Tomorrow's Girlfriend</div>
+                <div style="font-size:14px; margin-bottom:20px;">“在这个孤独的城市，租借一个梦。”</div>
+                <div onclick="startDownload()" style="background:#000; color:#fff; padding:12px 30px; border-radius:25px; display:inline-block; font-weight:bold; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                    立即注册 & 下载 App
+                </div>
+            `);
+        }
+    }
+
     function startDownload() {
+        if (isAppInstalled) return;
+
         showIOSToast("正在获取...");
         setTimeout(() => {
             closeApp(); // Close Safari
@@ -1147,8 +1550,8 @@
 
                 // Show iOS Alert (Download Completed)
                 showIOSAlert("下载完成", "“TG”已成功安装。", [
-                    { text: "打开", style: "bold", action: () => openApp('tg') },
-                    { text: "关闭", action: null }
+                    { text: "打开", style: "bold", action: () => { openApp('tg'); onAppInstalled(); } }, // Trigger new logic
+                    { text: "关闭", action: () => onAppInstalled() } // Trigger new logic even if closed
                 ]);
             }, 3000); // Download Duration
         }, 1000);
@@ -1213,13 +1616,76 @@
 
     function bookCharacter() {
         if(!currentTgChar) return;
+        const p = profiles[currentTgChar];
+
+        // Show Modal
+        $('#bk-name').text(p.name);
+
+        // Context-aware Time & Location
+        if (bookingContext === 'reunion') {
+            $('#bk-time').text("今晚 19:30");
+            $('#bk-loc').text("歌舞伎町 Platinum KTV");
+        } else {
+            // Get Next Saturday 20:00
+            const d = new Date();
+            d.setDate(d.getDate() + (6 - d.getDay() + 7) % 7);
+            const dateStr = d.toLocaleDateString('zh-CN', {month:'long', day:'numeric'}) + " (周六)";
+            $('#bk-time').text(dateStr + " 20:00");
+
+            // Location
+            const loc = p.name === "如月绘里奈" ? "歌舞伎町一番街" : "银座四丁目交叉点";
+            $('#bk-loc').text(loc);
+        }
+
+        $('#booking-modal-overlay').css('display', 'flex');
+    }
+
+    function closeBookingModal(e) {
+        if (e) e.stopPropagation();
+        $('#booking-modal-overlay').fadeOut(200);
+    }
+
+    function confirmBooking() {
+        closeBookingModal();
+
+        // Show Animation
+        $('#pay-overlay').css('display', 'flex');
+
+        // 1. Spinner (1.5s)
+        setTimeout(() => {
+            $('#pay-spinner').hide();
+            $('#pay-check').css('transform', 'scale(1)');
+            $('#pay-text').css('opacity', '1');
+
+            // 2. Success State (1s)
+            setTimeout(() => {
+                $('#pay-overlay').fadeOut(200, () => {
+                    // Reset Animation State
+                    $('#pay-spinner').show();
+                    $('#pay-check').css('transform', 'scale(0)');
+                    $('#pay-text').css('opacity', '0');
+
+                    // Proceed with logic
+                    finishBookingProcess();
+                });
+            }, 1000);
+        }, 1500);
+    }
+
+    function finishBookingProcess() {
+        // Erina Rejection Logic
+        if (currentTgChar === 'erina') {
+            showIOSAlert("预约失败", "对方拒绝了您的请求。\n(Code: 403 - User Rejected)", [{ text: "好", style: "bold" }]);
+            return;
+        }
+
         booked[currentTgChar] = true;
 
         // Update UI
         $('#tg-btn-book').text("已预约").prop('disabled', true);
 
         // Use iOS Alert for booking confirmation
-        showIOSAlert("申请已发送", "您的预约申请已提交给演员确认。", [{ text: "好", style: "bold" }]);
+        showIOSAlert("预约成功", "您的预约申请已提交给演员确认。", [{ text: "好", style: "bold" }]);
 
         // First Time Booking Message (Rules)
         if (!hasBookedOnce) {
@@ -1234,25 +1700,47 @@
 
         // 1. Send Individual Notification & Message (Delay 1s)
         setTimeout(() => {
+            // Determine Message and Action based on Context
+            let confirmMsg = p.msg_single;
+            let swipeId = openings[p.opening_index].swipeId;
+
+            if (bookingContext === 'reunion' && currentTgChar === 'ayane') {
+                confirmMsg = "订单确认：今晚 19:30，歌舞伎町 Platinum KTV。我会准时到的...那个，真的是去见朋友吗？有点紧张呢。";
+                // Reunion Opening is Opening 6 (index 5)
+                swipeId = openings[5].swipeId;
+            }
+
             // Show Notification Bubble - Clicking opens the character's reply with button
-            showNotification(p.name, p.msg_single, p.img, () => openMessageDetail({
+            showNotification(p.name, confirmMsg, p.img, () => openMessageDetail({
                 sender: p.name,
-                text: p.msg_single,
-                swipeId: openings[p.opening_index].swipeId
+                text: confirmMsg,
+                swipeId: swipeId,
+                avatar: p.img // Pass avatar
             }));
 
             // Add to Chat List (Pinned)
-            addMessage(p.name, "预约确认", "刚刚", p.msg_single, p.opening_index, true);
+            addMessage(p.name, "预约确认", "刚刚", confirmMsg, -1, true); // -1 because we pass custom data
 
-            // 2. Check Conflict (Delay + 2s)
-            if(booked.erina && booked.ayane) {
+            // Note: We need to handle the 'swipeId' in addMessage if we want the "Enter Story" button to work in the list view too
+            // But openMessageDetail handles it via the object passed.
+            // Let's update the activeMessages with the correct swipeId for persistence
+            if (activeMessages.length > 0) {
+                activeMessages[0].swipeId = swipeId;
+                // Re-render to ensure click handler has correct data
+                renderMessages();
+            }
+
+            // 2. Check Conflict (Only for Standard Flow, probably not relevant for Reunion but keep logic safe)
+            // If Reunion, we don't trigger conflict logic with Erina because Erina is rejected anyway.
+            if(booked.erina && booked.ayane && bookingContext !== 'reunion') {
                 setTimeout(() => {
                     // Conflict Notifications
                     // Clicking notification opens the conflict message detail
                     const conflictMsg = {
                         sender: "如月绘里奈 & 月宫绾音",
                         text: "既然你两个都想要，那就做好觉悟吧...",
-                        swipeId: openings[0].swipeId
+                        swipeId: openings[0].swipeId,
+                        avatar: "https://ui-avatars.com/api/?name=%20&background=ccc&color=fff"
                     };
 
                     showNotification("如月绘里奈", "哈？你这家伙也太贪心了吧？💢", profiles.erina.img, () => openMessageDetail(conflictMsg));
@@ -1315,7 +1803,7 @@
     }
 
     // Notifications
-    function showNotification(title, text, icon, callback) {
+    function showNotification(title, text, icon, callback, targetApp = 'messages') {
         const el = document.createElement('div');
         el.className = 'notif-bubble';
         el.innerHTML = `
@@ -1326,7 +1814,7 @@
             </div>`;
         el.onclick = () => {
             el.classList.remove('show');
-            openApp('messages');
+            if (targetApp) openApp(targetApp);
             if(callback) callback();
         };
         document.getElementById('notif-container').appendChild(el);
@@ -1341,18 +1829,22 @@
         const container = document.getElementById('msg-list-container');
         let html = '';
 
+        // Add Ad Message if not installed
+        if (!isAppInstalled) {
+             const adMsg = {
+                sender: "TG平台",
+                avatar: "https://i.postimg.cc/Njm9yRxk/unnamed-(3).png",
+                time: "刚刚",
+                text: "【推广】点击链接下载APP，开启你的恋爱之旅...",
+                pinned: true,
+                isAd: true
+            };
+            html += createMsgItemFromObj(adMsg);
+        }
+
         // Render Active Messages
         activeMessages.forEach(msg => {
             html += createMsgItemFromObj(msg);
-        });
-
-        // Render Default System Openings (Bottom), excluding ones that are already active
-        const activeIndices = activeMessages.map(m => m.openingData ? openings.indexOf(m.openingData) : -1);
-
-        openings.forEach((o, idx) => {
-            if (!activeIndices.includes(idx)) {
-                html += createMsgItem(o);
-            }
         });
 
         container.innerHTML = html;
@@ -1374,8 +1866,9 @@
 
     function createMsgItemFromObj(msg) {
         // Pass the entire msg object to openMessageDetail
+        const clickAction = msg.isAd ? 'openAdDetail()' : `openMessageDetail(${JSON.stringify(msg).replace(/"/g, '&quot;')})`; // Fix potential JSON stringify issues in onclick
         return `
-        <div class="msg-list-item" style="background:${msg.pinned ? '#f0f8ff' : '#fff'}" onclick='openMessageDetail(${JSON.stringify(msg)})'>
+        <div class="msg-list-item" style="background:${msg.pinned ? '#f0f8ff' : '#fff'}" onclick='${clickAction}'>
             <div class="msg-avatar"><img src="${msg.avatar}"></div>
             <div class="msg-info">
                 <div class="msg-top"><span class="msg-sender">${msg.sender}</span><span class="msg-time">${msg.time}</span></div>
@@ -1414,19 +1907,56 @@
         $('#msg-badge').show();
     }
 
+    function openAdDetail() {
+        $('#chat-title').text("TG平台");
+
+        // Classic Chat Bubble Style for Ad
+        $('#chat-container').html(`
+            <div class="chat-row receive">
+                <img src="https://i.postimg.cc/Njm9yRxk/unnamed-(3).png" class="chat-avatar">
+                <div class="chat-content">
+                    <div class="chat-name">TG平台</div>
+                    <div class="chat-bubble receive">
+                        <div style="font-weight:bold; margin-bottom:5px;">Tomorrow's Girlfriend</div>
+                        还在忍受孤独？<br>首单半价，租借你的专属恋人。<br>
+                        <div style="margin-top:10px; border-top:1px solid #eee; padding-top:5px;">
+                            <span style="color:#007aff; cursor:pointer;" onclick="closeMsgDetail(); openApp('safari')">点击立即下载 >></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+        $('#msg-detail-view').css('display', 'flex');
+    }
+
     function openMessageDetail(data) {
         if (!data) return;
+
+        // Check if it's a story script message
+        if (data.isStory && data.scriptId) {
+            openStoryChat(data.scriptData);
+            return;
+        }
 
         // Use data properties directly (whether it's a msg object or opening object)
         // Both structures now have sender, text, and swipeId (opening object has swipeId, msg has it from addMessage)
         const sender = data.sender;
         const text = data.text;
         const swipeId = data.swipeId;
+        const avatar = data.avatar || `https://ui-avatars.com/api/?name=${sender}&background=007aff&color=fff`;
 
         $('#chat-title').text(sender);
+
+        // Classic detail view for non-story messages
         $('#chat-container').html(`
+            <div class="chat-row receive">
+                <img src="${avatar}" class="chat-avatar">
+                <div class="chat-content">
+                    <div class="chat-name">${sender}</div>
             <div class="chat-bubble receive">${text}</div>
-            ${swipeId >= 0 ? `<button class="btn-confirm-start" onclick="selectOpening(${swipeId})">进入剧情</button>` : ''}
+                </div>
+            </div>
+            ${swipeId >= 0 ? `<div style="text-align:center; margin-top:20px;"><button class="btn-confirm-start" onclick="selectOpening(${swipeId})">进入剧情</button></div>` : ''}
         `);
         $('#msg-detail-view').css('display', 'flex');
     }
@@ -1452,6 +1982,8 @@
     }
 
     // Forum Logic
+    let currentForumIndex = -1;
+
     function renderForum() {
         const html = forumData.map((p, i) => `
             <div class="forum-post" onclick="openForumDetail(${i})">
@@ -1462,6 +1994,7 @@
     }
 
     function openForumDetail(idx) {
+        currentForumIndex = idx;
         const p = forumData[idx];
         const comments = p.comments.map(c => `
             <div class="fd-comment">
@@ -1477,14 +2010,64 @@
             <div class="fd-body">${p.body}</div>
             <div>${comments}</div>
         `);
+
+        // Reply Bar
+        if (p.replies && p.replies.length > 0 && !p.triggered) {
+            $('#forum-reply-bar').show();
+        } else {
+            $('#forum-reply-bar').hide();
+        }
+
         $('#forum-detail').css('display', 'flex');
     }
     function closeForumDetail() { $('#forum-detail').hide(); }
 
+    function handleForumReplyClick() {
+        if (currentForumIndex === -1) return;
+        const p = forumData[currentForumIndex];
+
+        // Reuse Reply Modal logic but for Forum
+        const html = p.replies.map((r, i) => `
+            <div class="reply-option" onclick="selectForumReply(${i})">
+                ${r.text}
+            </div>
+        `).join('');
+        $('#reply-options-list').html(html);
+        $('#reply-modal-overlay').css('display', 'flex');
+    }
+
+    function selectForumReply(replyIndex) {
+        closeReplyModal(null);
+        const p = forumData[currentForumIndex];
+        const r = p.replies[replyIndex];
+
+        // Add Comment
+        const newComment = { id: p.comments.length + 1, user: "我", text: r.text };
+        p.comments.push(newComment);
+
+        // Refresh View
+        openForumDetail(currentForumIndex);
+        $('#forum-reply-bar').hide(); // Hide after reply
+
+        // Trigger
+        if (r.action && !p.triggered) {
+            p.triggered = true;
+            setTimeout(() => {
+                const script = storyScripts[r.action];
+                if(script) {
+                    showNotification(script.sender, script.preview, script.avatar, () => openStoryChat(r.action));
+                    addStoryMessage(script);
+                }
+            }, 1000);
+        }
+    }
+
     // X Logic
+    let currentTweetIndex = -1;
+
     function renderX() {
-        const html = tweets.map(t => `
-            <div class="tweet">
+        const html = tweets.map((t, i) => `
+            <div class="tweet" onclick="handleTweetClick(${i})" style="${t.trigger ? 'cursor:pointer' : ''}">
                 <div style="width:40px;height:40px;background:#333;border-radius:50%;flex-shrink:0;overflow:hidden">
                     <img src="https://ui-avatars.com/api/?name=${t.handle}&background=random" style="width:100%">
                 </div>
@@ -1493,16 +2076,198 @@
                         <span class="t-user">${t.user}</span>
                         <span class="t-handle">${t.handle}</span>
                         ${t.private ? '<span class="private-badge">密友圈</span>' : ''}
+                        ${t.trigger && !t.triggered ? '<span style="margin-left:auto;color:#ff4757;font-size:10px"><i class="fas fa-exclamation-circle"></i></span>' : ''}
                     </div>
                     <div class="t-text">${t.text}</div>
                     <div style="font-size:12px;color:#666">
-                        <i class="far fa-comment"></i> 2
+                        <i class="far fa-comment"></i> ${t.comments ? t.comments.length : 0}
                         <i class="fas fa-retweet" style="margin-left:15px"></i> 5
                         <i class="far fa-heart" style="margin-left:15px"></i> 12
                     </div>
                 </div>
             </div>`).join('');
         $('#x-content').html(html);
+    }
+
+    function handleTweetClick(index) {
+        currentTweetIndex = index;
+        const t = tweets[index];
+
+        // 1. Render Main Content
+        const detailHtml = `
+            <div class="x-d-user-row">
+                <img src="https://ui-avatars.com/api/?name=${t.handle}&background=random" class="x-d-avatar">
+                <div class="x-d-names">
+                    <span style="font-weight:bold;color:#fff">${t.user}</span>
+                    <span style="color:#666;font-size:13px">${t.handle}</span>
+                </div>
+            </div>
+            <div class="x-d-text">${t.text}</div>
+            <div class="x-d-meta">
+                ${t.time} · Twitter for iPhone
+            </div>
+            <div class="x-d-stats">
+                <div><span class="x-d-stat-val">2</span> <span style="font-weight:normal">Retweets</span></div>
+                <div><span class="x-d-stat-val">5</span> <span style="font-weight:normal">Quote Tweets</span></div>
+                <div><span class="x-d-stat-val">12</span> <span style="font-weight:normal">Likes</span></div>
+            </div>
+        `;
+        $('#x-d-container').html(detailHtml);
+
+        // 2. Render Comments
+        renderComments(t.comments || []);
+
+        // 3. Setup Reply Area
+        // Only show reply interaction if there are reply options (triggerable tweet)
+        if (t.replies && t.replies.length > 0) {
+            $('#x-reply-area').show();
+            if (t.replied) {
+                // Locked state
+                $('#x-reply-area').html(`
+                    <div style="flex:1;text-align:center;color:#666;font-size:14px;background:#111;padding:10px;border-radius:20px;">
+                        <i class="fas fa-lock"></i> 已回复
+                    </div>
+                `);
+            } else {
+                // Active state
+                $('#x-reply-area').html(`
+                    <div style="width:30px;height:30px;background:#007aff;border-radius:50%;overflow:hidden">
+                         <img src="https://ui-avatars.com/api/?name=Me&background=007aff&color=fff" style="width:100%">
+                    </div>
+                    <div class="x-reply-input" onclick="openReplyModal()">发布你的回复</div>
+                    <div class="x-reply-btn-send">回复</div>
+                `);
+            }
+        } else {
+            $('#x-reply-area').hide();
+        }
+
+        $('#x-detail-view').css('display', 'flex');
+    }
+
+    function renderComments(comments) {
+        if (!comments || comments.length === 0) {
+            $('#x-comments-list').html('<div style="padding:20px;text-align:center;color:#666;font-size:13px">暂无评论</div>');
+            return;
+        }
+
+        const html = comments.map(c => `
+            <div class="x-comment-item ${c.isNew ? 'new-comment' : ''}">
+                <img src="https://ui-avatars.com/api/?name=${c.handle}&background=random" class="x-c-avatar">
+                <div class="x-c-content">
+                    <div class="x-c-header">
+                        <span class="x-c-name">${c.user}</span>
+                        <span class="x-c-handle">${c.handle}</span>
+                    </div>
+                    <div class="x-c-text">${c.text}</div>
+                    <div class="x-c-actions">
+                        <i class="far fa-comment"></i>
+                        <i class="fas fa-retweet"></i>
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        $('#x-comments-list').html(html);
+    }
+
+    function closeXDetail() {
+        $('#x-detail-view').hide();
+    }
+
+    function openReplyModal() {
+        if (currentTweetIndex === -1) return;
+        const t = tweets[currentTweetIndex];
+        if (!t.replies) return;
+
+        const html = t.replies.map((r, i) => `
+            <div class="reply-option" onclick="selectReply(${i})">
+                ${r.text}
+            </div>
+        `).join('');
+        $('#reply-options-list').html(html);
+        $('#reply-modal-overlay').css('display', 'flex');
+    }
+
+    function closeReplyModal(e) {
+        if (e) e.stopPropagation();
+        $('#reply-modal-overlay').fadeOut(200);
+    }
+
+    function selectReply(replyIndex) {
+        closeReplyModal(null);
+
+        const t = tweets[currentTweetIndex];
+        const r = t.replies[replyIndex];
+
+        // Mark as replied
+        t.replied = true;
+
+        // 1. Add User Comment to List (Animation)
+        const newComment = {
+            user: "我",
+            handle: "@Me",
+            text: r.text,
+            isNew: true
+        };
+
+        if (!t.comments) t.comments = [];
+        t.comments.unshift(newComment);
+
+        // Refresh UI to show locked state and new comment
+        handleTweetClick(currentTweetIndex);
+
+        // 2. Check trigger
+        if (r.action && !t.triggered) {
+            t.triggered = true;
+            renderX(); // Update main list status (exclamation mark)
+
+            // 3. Delayed Notification (Only notification, no auto jump)
+            setTimeout(() => {
+                const script = storyScripts[r.action];
+                if(script) {
+                    showNotification(script.sender, script.preview, script.avatar, () => openStoryChat(r.action));
+
+                    // Add to message list silently
+                    addStoryMessage(script);
+
+                    // Update Badge
+                    const badge = $('#msg-badge');
+                    const count = parseInt(badge.text() || 0) + 1;
+                    badge.text(count).show();
+
+                    // Sound
+                    const audio = document.getElementById('unlock-sound');
+                    if(audio) {
+                        audio.currentTime=0;
+                        audio.play().catch(e=>{});
+                    }
+                }
+            }, 1000);
+        }
+    }
+
+    function triggerStoryEvent(key) {
+        const script = storyScripts[key];
+        if(!script) return;
+
+        // Show Notification
+        showNotification(script.sender, script.preview, script.avatar, () => openStoryChat(key));
+
+        // Add to Message List
+        addStoryMessage(script);
+
+        // Update Badge
+        const badge = $('#msg-badge');
+        const count = parseInt(badge.text() || 0) + 1;
+        badge.text(count).show();
+
+        // Vibrate/Sound
+        const audio = document.getElementById('unlock-sound');
+        if(audio) {
+            audio.currentTime=0;
+            audio.play().catch(e=>{console.log("Audio error",e)});
+        }
     }
 
     // Init
@@ -1515,3 +2280,4 @@
 </script>
 </body>
 </html>
+```
